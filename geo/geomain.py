@@ -1,0 +1,112 @@
+from geocoder import MongoGeoCoder
+from distance_calculator import MongoDistanceCalculator
+from utils.mongodb_utils import get_mongo_collection
+from datetime import datetime
+import time
+import pandas as pd
+
+class MainGeoProcessor:
+    def __init__(self):
+        self.geo = MongoGeoCoder()
+        self.dist = MongoDistanceCalculator()
+        self.rides_collection = get_mongo_collection("enriched_rides")
+        self.calendar_collection = get_mongo_collection("calendar_tasks")
+        self.log_collection = get_mongo_collection("geo_logs")
+
+    def fetch_records_to_enrich(self, source_name):
+        collection = get_mongo_collection(f"{source_name}_rides") if source_name != "calendar" else get_mongo_collection("calendar_tasks")
+        query = {
+            "$or": [
+                {"GeoStatus": {"$exists": False}},
+                {"GeoStatus": ""},
+                {"DistanceStatus": {"$exists": False}},
+                {"DistanceStatus": ""}
+            ],
+            "Status": {"$ne": "REMOVED"}
+        }
+        return list(collection.find(query)), collection
+
+    def update_flags(self, record):
+        geo_status = "Done"
+        if record.get('Pickup_lat') is None:
+            geo_status = "Pickup Failed"
+        elif record.get('Dropoff_lat') is None:
+            geo_status = "Dropoff Failed"
+
+        distance_status = "Done" if record.get("Distance_meters") else "Failed"
+        return geo_status, distance_status
+
+    def log_event(self, level, message, data=None):
+        entry = {
+            "timestamp": datetime.utcnow(),
+            "level": level,
+            "message": message,
+            "data": data or {}
+        }
+        print(f"[{entry['timestamp'].strftime('%H:%M:%S')}] [{level.upper()}] {message} | {entry['data']}")
+        self.log_collection.insert_one(entry)
+
+    def fetch_dataframe_from_mongo(self, collection, query):
+        docs = list(collection.find(query))
+        return pd.DataFrame(docs) if docs else pd.DataFrame()
+
+    def update_enriched_rides(self):
+        elife_df = self.fetch_dataframe_from_mongo(get_mongo_collection("elife_rides"), {"Status": {"$ne": "REMOVED"}})
+        wt_df = self.fetch_dataframe_from_mongo(get_mongo_collection("wt_rides"), {"Status": {"$ne": "REMOVED"}})
+
+        enriched_df = pd.concat([elife_df, wt_df], ignore_index=True)
+        enriched_df = enriched_df.dropna(subset=["ID"])
+
+        new_df = enriched_df.copy()
+        new_df.set_index("ID", inplace=True)
+
+        existing_df = self.fetch_dataframe_from_mongo(self.rides_collection, {})
+        existing_df.set_index("ID", inplace=True) if not existing_df.empty else None
+
+        to_update = new_df.loc[new_df.index.intersection(existing_df.index)]
+        to_add = new_df.loc[~new_df.index.isin(existing_df.index)]
+        to_remove = existing_df.loc[~existing_df.index.isin(new_df.index)]
+
+        for doc_id, row in to_update.iterrows():
+            self.rides_collection.update_one({"ID": doc_id}, {"$set": row.to_dict()})
+
+        if not to_add.empty:
+            self.rides_collection.insert_many(to_add.reset_index().to_dict(orient="records"))
+
+        for doc_id in to_remove.index:
+            self.rides_collection.delete_one({"ID": doc_id})
+
+        self.log_event("info", "🔁 Enriched rides collection synchronized", {
+            "added": len(to_add),
+            "updated": len(to_update),
+            "removed": len(to_remove)
+        })
+
+    def run_enrichment_loop(self, interval=30):
+        self.log_event("info", "🌍 Enrichment loop started", {"interval_seconds": interval})
+        while True:
+            try:
+                for source in ["elife", "wt", "calendar"]:
+                    records, collection = self.fetch_records_to_enrich(source)
+                    self.log_event("info", f"🔍 Found {len(records)} to enrich for {source}")
+                    for rec in records:
+                        try:
+                            rec = self.geo.process_address_fields(rec, source=source)
+                            rec = self.dist.enrich_record(rec, source=source)
+                            rec["GeoStatus"], rec["DistanceStatus"] = self.update_flags(rec)
+                            collection.update_one({"ID": rec["ID"]}, {"$set": rec})
+                            self.log_event("info", f"✅ Enriched {source} ID: {rec['ID']}", {"GeoStatus": rec["GeoStatus"], "DistanceStatus": rec["DistanceStatus"]})
+                        except Exception as e:
+                            self.log_event("error", f"❌ Failed for {source} ID: {rec.get('ID', 'UNKNOWN')}", {"error": str(e)})
+
+                self.update_enriched_rides()
+                time.sleep(interval)
+
+            except Exception as loop_error:
+                self.log_event("critical", "🔥 Enrichment loop crashed", {"error": str(loop_error)})
+                time.sleep(interval)
+
+
+if __name__ == "__main__":
+    processor = MainGeoProcessor()
+    processor.run_enrichment_loop(interval=30)

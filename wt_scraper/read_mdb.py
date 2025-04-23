@@ -10,7 +10,7 @@ def test_read_from_mongo():
     db_name = os.getenv("MONGODB_DB_NAME", "city_agent")
 
     client = MongoClient(uri)
-    collection = client[db_name]["elife_rides"]
+    collection = client[db_name]["enriched_rides"]
 
     print(f"Connected to MongoDB → Database: {db_name}, Collection: wt_rides")
     print("Fetching all records...\n")
@@ -27,7 +27,7 @@ def test_read_from_mongo():
     df = pd.DataFrame(data)
 
     # Optional: Reorder columns if needed
-    columns_order = ['ID', 'Vehicle', 'Pickup', 'Dropoff', 'Time', 'Status', 'FirstSeen', 'LastSeen']
+    columns_order = ['ID', 'Vehicle', 'Pickup', 'Dropoff', 'Time','Transfer_Datetime', 'Status', 'FirstSeen', 'LastSeen']
     df = df[[col for col in columns_order if col in df.columns]]
 
     # Print tabular format
