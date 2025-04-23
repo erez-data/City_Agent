@@ -1,0 +1,19 @@
+# pip install dependencies here
+pandas~=2.2.3
+selenium~=4.31.0
+undetected-chromedriver~=3.5.5
+python-dotenv~=1.1.0
+geopy~=2.4.1
+google-api-python-client~=2.167.0
+google-auth
+google-auth-httplib2
+google-auth-oauthlib~=1.2.1
+fuzzywuzzy~=0.18.0
+python-Levenshtein
+setuptools
+
+requests~=2.32.3
+python-dateutil~=2.9.0.post0
+protobuf~=6.30.2
+pymongo~=4.12.0
+beautifulsoup4~=4.13.4
