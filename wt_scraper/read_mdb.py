@@ -10,7 +10,7 @@ def test_read_from_mongo():
     db_name = os.getenv("MONGODB_DB_NAME", "city_agent")
 
     client = MongoClient(uri)
-    collection = client[db_name]["wt_rides"]
+    collection = client[db_name]["elife_rides"]
 
     print(f"Connected to MongoDB → Database: {db_name}, Collection: wt_rides")
     print("Fetching all records...\n")
