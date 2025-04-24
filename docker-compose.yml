@@ -1,44 +1,109 @@
 version: '3.8'
+
 services:
+  # Base image for Chrome-dependent services
+  scraper-base:
+    build: ./scraper-base
+    image: cityagent-scraper-base:latest
+
+  # Chrome-dependent services
+  elife_scraper:
+    build:
+      context: ./elife_scraper
+      dockerfile: Dockerfile.chrome  # Save the Chrome Dockerfile as this
+    image: cityagent-elife-scraper:latest
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+    restart: always
+    volumes:
+      - type: bind
+        source: ./utils
+        target: /app/utils
+        read_only: true
+
+  wt_scraper:
+    build:
+      context: ./wt_scraper
+      dockerfile: Dockerfile.chrome
+    image: cityagent-wt-scraper:latest
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+    restart: always
+    volumes:
+      - type: bind
+        source: ./utils
+        target: /app/utils
+        read_only: true
+
+  # Non-Chrome services
   analyzer:
     build: ./analyzer
+    image: cityagent-analyzer:latest
     env_file: .env
-    mem_limit: 512m
-    cpus: 0.25
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
     restart: always
+    volumes:
+      - type: bind
+        source: ./utils
+        target: /app/utils
+        read_only: true
 
   calendar_scraper:
     build: ./calendar_scraper
+    image: cityagent-calendar-scraper:latest
     env_file: .env
-    mem_limit: 512m
-    cpus: 0.25
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
     restart: always
-
-  elife_scraper:
-    build: ./elife_scraper
-    env_file: .env
-    mem_limit: 512m
-    cpus: 0.25
-    restart: always
+    volumes:
+      - type: bind
+        source: ./utils
+        target: /app/utils
+        read_only: true
 
   geo:
     build: ./geo
+    image: cityagent-geo:latest
     env_file: .env
-    mem_limit: 512m
-    cpus: 0.25
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
     restart: always
+    volumes:
+      - type: bind
+        source: ./utils
+        target: /app/utils
+        read_only: true
 
   match:
     build: ./match
+    image: cityagent-match:latest
     env_file: .env
-    mem_limit: 512m
-    cpus: 0.25
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
     restart: always
-
-  wt_scraper:
-    build: ./wt_scraper
-    env_file: .env
-    mem_limit: 512m
-    cpus: 0.25
-    restart: always
-
+    volumes:
+      - type: bind
+        source: ./utils
+        target: /app/utils
+        read_only: true
