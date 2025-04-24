@@ -1,0 +1,176 @@
+2025-04-24 23:09:19,363 - INFO - Preparing data...
+2025-04-24 23:09:19,364 - INFO - ride_datetime converted to datetime
+2025-04-24 23:09:19,364 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:09:19,364 - INFO - Ride_Time converted to datetime
+2025-04-24 23:09:19,365 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:09:19,366 - INFO - Match_Time converted to datetime
+2025-04-24 23:09:19,367 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:09:19,367 - INFO - last_updated converted to datetime
+2025-04-24 23:09:19,368 - INFO - Processing 13 rides
+2025-04-24 23:09:19,368 - INFO - Processing ride ID: elife_Sedan_2025-04-27_12:00_PM_BRONZE_HOT_Dalaman_In
+2025-04-24 23:09:42,911 - INFO - Processing ride ID: elife_Sedan_2025-04-28_16:10_PM_Dalaman_Ai_VOXX_RESOR
+2025-04-24 23:10:05,798 - INFO - Processing ride ID: elife_Sedan_2025-04-29_17:30_PM_Dalaman_In_Yeshill_Bo
+2025-04-24 23:10:30,621 - INFO - Processing ride ID: elife_Sedan_2025-04-30_09:50_AM_Dalaman_In_Ada_Julian
+2025-04-24 23:10:51,107 - INFO - Processing ride ID: elife_Sedan_2025-05-03_09:45_AM_VOXX_RESOR_Dalaman_Ai
+2025-04-24 23:11:14,050 - INFO - Processing ride ID: elife_Sedan_2025-05-03_22:10_PM_Dalaman_Ai_Tropical_B
+2025-04-24 23:11:40,162 - INFO - Processing ride ID: elife_Sedan_2025-05-11_00:30_AM_Dalaman_Ai_Club_Tuana
+2025-04-24 23:12:09,795 - INFO - Processing ride ID: elife_Sedan_2025-05-17_22:20_PM_Club_Tuana_Dalaman_Ai
+2025-04-24 23:12:30,800 - INFO - Processing ride ID: elife_Minibus-8_2025-05-25_03:40_AM_Armutalan,_Dalaman_Ai
+2025-04-24 23:13:01,644 - INFO - Processing ride ID: elife_MPV-5_2025-05-25_05:00_AM_Dalaman_Ai_Liberty_Fa
+2025-04-24 23:13:29,046 - INFO - Processing ride ID: elife_Minibus-7_2025-05-25_19:20_PM_Orka_World_Dalaman_Ai
+2025-04-24 23:13:52,564 - INFO - Processing ride ID: wt_Premium_Economy_PKW_2025-04-28_22:35:00_Dalaman_In_Grand_Pres
+2025-04-24 23:14:16,181 - INFO - Processing ride ID: elife_Sedan_2025-05-25_22:20_PM_Dalaman_Ai_Sea_Star_M
+2025-04-24 23:14:37,291 - INFO - Processing 13 calendar entries
+2025-04-24 23:14:37,294 - ERROR - Error processing calendar entry bVdNa0JoRmpxbjhzWjNkQQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,296 - ERROR - Error processing calendar entry R1h1aUJpWlFXNFpQZVF6aQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,297 - ERROR - Error processing calendar entry RDFUV1dkRVd1ZVJOMllqMQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,298 - ERROR - Error processing calendar entry ajhzM0JJQTZzYTZVRkJaSA: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,300 - ERROR - Error processing calendar entry c25WcWNGY3FmRUg1WnBwbA: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,301 - ERROR - Error processing calendar entry MWw1YWFnTDRONjNrakR5UQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,304 - ERROR - Error processing calendar entry d1JhNTRCcWgxRHAtSnNNUQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,306 - ERROR - Error processing calendar entry QUxDUHN2aFhJcmdVY25meQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,308 - ERROR - Error processing calendar entry WmdEVEVNd2V6cWZ3RmhwaQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,311 - ERROR - Error processing calendar entry TXhROVFRSURGVzg3dXJKMQ: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,312 - ERROR - Error processing calendar entry NmtMQUpVejBianFYekpnQw: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,314 - ERROR - Error processing calendar entry M3pxTm0wWU9sRENvRGh2Yw: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:14:37,315 - ERROR - Error processing calendar entry MUFtRGsybXdyUGFIdzZEUA: 'RideAnalyzer' object has no attribute 'create_calendar_prompt'
+2025-04-24 23:15:36,813 - INFO - Preparing data...
+2025-04-24 23:15:36,814 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:15:36,814 - INFO - Ride_Time converted to datetime
+2025-04-24 23:15:36,815 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:15:36,815 - INFO - Match_Time converted to datetime
+2025-04-24 23:15:36,815 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:15:36,815 - INFO - last_updated converted to datetime
+2025-04-24 23:15:36,815 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:16:27,679 - INFO - Preparing data...
+2025-04-24 23:16:27,680 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:16:27,680 - INFO - Ride_Time converted to datetime
+2025-04-24 23:16:27,681 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:16:27,681 - INFO - Match_Time converted to datetime
+2025-04-24 23:16:27,681 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:16:27,682 - INFO - last_updated converted to datetime
+2025-04-24 23:16:27,682 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:17:15,034 - INFO - Preparing data...
+2025-04-24 23:17:15,034 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:17:15,035 - INFO - Ride_Time converted to datetime
+2025-04-24 23:17:15,035 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:17:15,035 - INFO - Match_Time converted to datetime
+2025-04-24 23:17:15,036 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:17:15,036 - INFO - last_updated converted to datetime
+2025-04-24 23:17:15,036 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:18:12,642 - INFO - Preparing data...
+2025-04-24 23:18:12,643 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:18:12,643 - INFO - Ride_Time converted to datetime
+2025-04-24 23:18:12,643 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:18:12,643 - INFO - Match_Time converted to datetime
+2025-04-24 23:18:12,644 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:18:12,644 - INFO - last_updated converted to datetime
+2025-04-24 23:18:12,644 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:18:56,673 - INFO - Preparing data...
+2025-04-24 23:18:56,673 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:18:56,673 - INFO - Ride_Time converted to datetime
+2025-04-24 23:18:56,674 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:18:56,674 - INFO - Match_Time converted to datetime
+2025-04-24 23:18:56,674 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:18:56,675 - INFO - last_updated converted to datetime
+2025-04-24 23:18:56,675 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:19:51,992 - INFO - Preparing data...
+2025-04-24 23:19:51,993 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:19:51,994 - INFO - Ride_Time converted to datetime
+2025-04-24 23:19:51,996 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:19:51,996 - INFO - Match_Time converted to datetime
+2025-04-24 23:19:51,997 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:19:51,997 - INFO - last_updated converted to datetime
+2025-04-24 23:19:51,997 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:20:36,039 - INFO - Preparing data...
+2025-04-24 23:20:36,039 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:20:36,040 - INFO - Ride_Time converted to datetime
+2025-04-24 23:20:36,040 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:20:36,041 - INFO - Match_Time converted to datetime
+2025-04-24 23:20:36,041 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:20:36,041 - INFO - last_updated converted to datetime
+2025-04-24 23:20:36,042 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:21:20,283 - INFO - Preparing data...
+2025-04-24 23:21:20,283 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:21:20,284 - INFO - Ride_Time converted to datetime
+2025-04-24 23:21:20,284 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:21:20,284 - INFO - Match_Time converted to datetime
+2025-04-24 23:21:20,285 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:21:20,285 - INFO - last_updated converted to datetime
+2025-04-24 23:21:20,285 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:22:04,325 - INFO - Preparing data...
+2025-04-24 23:22:04,325 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:22:04,326 - INFO - Ride_Time converted to datetime
+2025-04-24 23:22:04,327 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:22:04,327 - INFO - Match_Time converted to datetime
+2025-04-24 23:22:04,328 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:22:04,328 - INFO - last_updated converted to datetime
+2025-04-24 23:22:04,329 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:22:48,696 - INFO - Preparing data...
+2025-04-24 23:22:48,696 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:22:48,697 - INFO - Ride_Time converted to datetime
+2025-04-24 23:22:48,697 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:22:48,697 - INFO - Match_Time converted to datetime
+2025-04-24 23:22:48,698 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:22:48,698 - INFO - last_updated converted to datetime
+2025-04-24 23:22:48,698 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:23:32,768 - INFO - Preparing data...
+2025-04-24 23:23:32,768 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:23:32,769 - INFO - Ride_Time converted to datetime
+2025-04-24 23:23:32,769 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:23:32,770 - INFO - Match_Time converted to datetime
+2025-04-24 23:23:32,770 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:23:32,770 - INFO - last_updated converted to datetime
+2025-04-24 23:23:32,771 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:24:17,014 - INFO - Preparing data...
+2025-04-24 23:24:17,015 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:24:17,016 - INFO - Ride_Time converted to datetime
+2025-04-24 23:24:17,016 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:24:17,017 - INFO - Match_Time converted to datetime
+2025-04-24 23:24:17,017 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:24:17,018 - INFO - last_updated converted to datetime
+2025-04-24 23:24:17,018 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:31:05,311 - INFO - Preparing data...
+2025-04-24 23:31:05,312 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:31:05,314 - INFO - Ride_Time converted to datetime
+2025-04-24 23:31:05,316 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:31:05,317 - INFO - Match_Time converted to datetime
+2025-04-24 23:31:05,317 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:31:05,317 - INFO - last_updated converted to datetime
+2025-04-24 23:31:05,318 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:31:49,310 - INFO - Preparing data...
+2025-04-24 23:31:49,310 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:31:49,311 - INFO - Ride_Time converted to datetime
+2025-04-24 23:31:49,312 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:31:49,312 - INFO - Match_Time converted to datetime
+2025-04-24 23:31:49,313 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:31:49,313 - INFO - last_updated converted to datetime
+2025-04-24 23:31:49,313 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:32:34,462 - INFO - Preparing data...
+2025-04-24 23:32:34,463 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:32:34,464 - INFO - Ride_Time converted to datetime
+2025-04-24 23:32:34,464 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:32:34,465 - INFO - Match_Time converted to datetime
+2025-04-24 23:32:34,465 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:32:34,466 - INFO - last_updated converted to datetime
+2025-04-24 23:32:34,466 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:33:18,519 - INFO - Preparing data...
+2025-04-24 23:33:18,519 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:33:18,520 - INFO - Ride_Time converted to datetime
+2025-04-24 23:33:18,520 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:33:18,520 - INFO - Match_Time converted to datetime
+2025-04-24 23:33:18,520 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:33:18,520 - INFO - last_updated converted to datetime
+2025-04-24 23:33:18,521 - ERROR - Error in _prepare_data: No ID column found in rides data
+2025-04-24 23:49:14,157 - INFO - Preparing data...
+2025-04-24 23:49:14,158 - INFO - ride_datetime converted to datetime
+2025-04-24 23:49:14,158 - INFO - Transfer_Datetime converted to datetime
+2025-04-24 23:49:14,161 - INFO - Ride_Time converted to datetime
+2025-04-24 23:49:14,161 - INFO - Ride_Arrival converted to datetime
+2025-04-24 23:49:14,161 - INFO - Match_Time converted to datetime
+2025-04-24 23:49:14,161 - INFO - Match_Arrival converted to datetime
+2025-04-24 23:49:14,162 - INFO - last_updated converted to datetime
+2025-04-24 23:49:14,162 - INFO - Processing 2 rides
+2025-04-24 23:49:14,164 - INFO - Processing ride ID: wt_Premium_Economy_PKW_2025-04-28_22:35:00_Dalaman_In_Grand_Pres
+2025-04-24 23:49:41,298 - INFO - Processing ride ID: elife_Sedan_2025-05-25_22:20_PM_Dalaman_Ai_Sea_Star_M
+2025-04-24 23:50:06,205 - INFO - Processing 13 calendar entries
