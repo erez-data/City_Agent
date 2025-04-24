@@ -2,7 +2,7 @@ import time
 from datetime import datetime, timedelta
 from login import ElifeAutoLogin
 from elife_scraper import ElifeScraper
-from utils.mongodb_utils import get_mongo_collection
+from mongodb_utils import get_mongo_collection
 from collections import Counter
 import traceback
 

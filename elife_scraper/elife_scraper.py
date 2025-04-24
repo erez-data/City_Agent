@@ -6,8 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pandas.api.types import is_datetime64_any_dtype as is_datetime
-from utils.time_utils import standardize_ride_time
-from utils.mongodb_utils import get_mongo_collection
+from time_utils import standardize_ride_time
+from mongodb_utils import get_mongo_collection
 
 class ElifeScraper:
     def __init__(self, driver):
