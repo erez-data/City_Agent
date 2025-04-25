@@ -5,7 +5,7 @@ import traceback
 from datetime import datetime, timedelta
 from collections import Counter
 from wt_login import WTAutoLogin
-from wt_scraper import WTScraperZoomScroll
+from wt_scv2 import WTScraperZoomScroll
 from utils.mongodb_utils import get_mongo_collection
 
 

@@ -67,7 +67,7 @@ class WTScraperZoomScroll:
         print("⬇️ Scrolling to bottom using ARROW_DOWN...")
         for i in range(max_scrolls):
             ActionChains(self.driver).send_keys(Keys.ARROW_DOWN).perform()
-            time.sleep(0.03)
+            time.sleep(0.1)
 
     def cache_page_source(self):
         print("💾 Caching page source...")

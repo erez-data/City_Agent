@@ -1,14 +1,12 @@
 version: '3.8'
 
 services:
-  # Base image builder
   scraper-base:
     build:
       context: .
       dockerfile: ./scraper-base/Dockerfile
     image: cityagent-scraper-base:latest
 
-  # Chrome-dependent services
   elife_scraper:
     build:
       context: .
@@ -19,11 +17,6 @@ services:
     env_file: .env
     volumes:
       - ./utils:/app/utils:ro
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.25'
     restart: always
 
   wt_scraper:
@@ -36,14 +29,8 @@ services:
     env_file: .env
     volumes:
       - ./utils:/app/utils:ro
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.25'
     restart: always
 
-  # Non-Chrome services
   analyzer:
     build:
       context: .
@@ -52,11 +39,6 @@ services:
     env_file: .env
     volumes:
       - ./utils:/app/utils:ro
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.25'
     restart: always
 
   calendar_scraper:
@@ -67,11 +49,6 @@ services:
     env_file: .env
     volumes:
       - ./utils:/app/utils:ro
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.25'
     restart: always
 
   geo:
@@ -82,11 +59,6 @@ services:
     env_file: .env
     volumes:
       - ./utils:/app/utils:ro
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.25'
     restart: always
 
   match:
@@ -97,9 +69,4 @@ services:
     env_file: .env
     volumes:
       - ./utils:/app/utils:ro
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.25'
     restart: always
