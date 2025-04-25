@@ -1,16 +1,14 @@
-version: '3.8'
-
 services:
   scraper-base:
     build:
-      context: .
-      dockerfile: ./scraper-base/Dockerfile
+      context: ./scraper-base
+      dockerfile: Dockerfile
     image: cityagent-scraper-base:latest
 
   elife_scraper:
     build:
-      context: .
-      dockerfile: ./elife_scraper/Dockerfile
+      context: ./elife_scraper
+      dockerfile: Dockerfile
     image: cityagent-elife-scraper:latest
     depends_on:
       - scraper-base
@@ -21,8 +19,8 @@ services:
 
   wt_scraper:
     build:
-      context: .
-      dockerfile: ./wt_scraper/Dockerfile
+      context: ./wt_scraper
+      dockerfile: Dockerfile
     image: cityagent-wt-scraper:latest
     depends_on:
       - scraper-base
@@ -33,8 +31,8 @@ services:
 
   analyzer:
     build:
-      context: .
-      dockerfile: ./analyzer/Dockerfile
+      context: ./analyzer
+      dockerfile: Dockerfile
     image: cityagent-analyzer:latest
     env_file: .env
     volumes:
@@ -43,8 +41,8 @@ services:
 
   calendar_scraper:
     build:
-      context: .
-      dockerfile: ./calendar_scraper/Dockerfile
+      context: ./calendar_scraper
+      dockerfile: Dockerfile
     image: cityagent-calendar-scraper:latest
     env_file: .env
     volumes:
@@ -53,8 +51,8 @@ services:
 
   geo:
     build:
-      context: .
-      dockerfile: ./geo/Dockerfile
+      context: ./geo
+      dockerfile: Dockerfile
     image: cityagent-geo:latest
     env_file: .env
     volumes:
@@ -63,8 +61,8 @@ services:
 
   match:
     build:
-      context: .
-      dockerfile: ./match/Dockerfile
+      context: ./match
+      dockerfile: Dockerfile
     image: cityagent-match:latest
     env_file: .env
     volumes:

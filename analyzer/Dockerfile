@@ -1,5 +1,5 @@
 # For services NOT needing Chrome (analyzer, calendar_scraper, geo, match)
-FROM python:3.10-slim
+FROM python:3.10-bullseye
 
 # Set timezone and locales
 ENV TZ=Europe/Istanbul
@@ -24,7 +24,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy utils first (for better layer caching)
-COPY utils/ /app/utils/
+
 COPY . .
 
 CMD ["python", "main_analysis.py"]

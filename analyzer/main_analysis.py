@@ -41,7 +41,7 @@ def fetch_analysis_candidates():
     calendar = list(calendar_col.find(calendar_filter))
     print(f"📊 Found {len(calendar)} calendar entries")
     if calendar:
-        print("First calendar ID:", calendar[0].get('ID', calendar[0].get('Task_ID', 'N/A')))
+        print("First calendar ID:", calendar[0].get('ID', calendar[0].get('ID', 'N/A')))
 
     print("\n🔄 Fetching match data...")
     matches = list(match_col.find({}))
@@ -80,13 +80,13 @@ def update_analysis_flags(rides, calendar, ride_results, calendar_results):
 
     # Calendar updates
     for result in calendar_results:
-        task_id = result.get("Task_ID", result.get("ID"))
+        task_id = result.get("ID", result.get("ID"))
         if not task_id:
             print(f"⚠️ Missing Task_ID/ID in calendar result: {result}")
             continue
 
         calendar_ops.append(UpdateOne(
-            {"$or": [{"ID": task_id}, {"Task_ID": task_id}]},
+            {"$or": [{"ID": task_id}, {"ID": task_id}]},
             {"$set": {
                 "Analyzed": True,
                 "AnalysisDatetime": now,

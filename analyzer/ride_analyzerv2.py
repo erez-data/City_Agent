@@ -24,56 +24,42 @@ class RideAnalyzer:
         self._prepare_data()
 
     def _prepare_data(self):
-        """Ensure all datetime columns and IDs are properly converted"""
-        try:
-            logging.info("Preparing data...")
+        logging.info("Preparing data...")
 
-            # Convert ride_datetime
+        if self.rides_df.empty:
+            logging.warning("Rides DataFrame is empty.")
+        else:
             if 'ride_datetime' in self.rides_df.columns:
-                if not pd.api.types.is_datetime64_any_dtype(self.rides_df['ride_datetime']):
-                    self.rides_df['ride_datetime'] = pd.to_datetime(
-                        self.rides_df['ride_datetime'],
-                        errors='coerce'
-                    )
+                self.rides_df['ride_datetime'] = pd.to_datetime(self.rides_df['ride_datetime'], errors='coerce')
                 logging.info("ride_datetime converted to datetime")
 
-            # Convert calendar datetime
-            if 'Transfer_Datetime' in self.calendar_df.columns:
-                if not pd.api.types.is_datetime64_any_dtype(self.calendar_df['Transfer_Datetime']):
-                    self.calendar_df['Transfer_Datetime'] = pd.to_datetime(
-                        self.calendar_df['Transfer_Datetime'],
-                        errors='coerce'
-                    )
-                logging.info("Transfer_Datetime converted to datetime")
+        if 'Ride_Time' in self.match_df.columns:
+            self.match_df['Ride_Time'] = pd.to_datetime(self.match_df['Ride_Time'], errors='coerce')
+            logging.info("Ride_Time converted to datetime")
+        if 'Ride_Arrival' in self.match_df.columns:
+            self.match_df['Ride_Arrival'] = pd.to_datetime(self.match_df['Ride_Arrival'], errors='coerce')
+            logging.info("Ride_Arrival converted to datetime")
+        if 'Match_Time' in self.match_df.columns:
+            self.match_df['Match_Time'] = pd.to_datetime(self.match_df['Match_Time'], errors='coerce')
+            logging.info("Match_Time converted to datetime")
+        if 'Match_Arrival' in self.match_df.columns:
+            self.match_df['Match_Arrival'] = pd.to_datetime(self.match_df['Match_Arrival'], errors='coerce')
+            logging.info("Match_Arrival converted to datetime")
+        if 'last_updated' in self.match_df.columns:
+            self.match_df['last_updated'] = pd.to_datetime(self.match_df['last_updated'], errors='coerce')
+            logging.info("last_updated converted to datetime")
 
-            # Convert match data datetime columns
-            datetime_cols = ['Ride_Time', 'Ride_Arrival', 'Match_Time', 'Match_Arrival', 'last_updated']
-            for col in datetime_cols:
-                if col in self.match_df.columns:
-                    self.match_df[col] = pd.to_datetime(self.match_df[col], errors='coerce')
-                    logging.info(f"{col} converted to datetime")
+        if self.calendar_df.empty:
+            logging.warning("Calendar DataFrame is empty. Skipping calendar processing.")
+            return
 
-            # Ensure ID fields are consistent
-            if 'ID' not in self.rides_df.columns:
-                if 'ID' in self.rides_df.columns:
-                    self.rides_df['ID'] = self.rides_df['ID'].astype(str)
-                    logging.info("Created ID column from ID for rides")
-                else:
-                    raise ValueError("No ID column found in rides data")
+        logging.warning(f"Calendar DataFrame columns: {self.calendar_df.columns.tolist()}")
 
-            if 'Task_ID' not in self.calendar_df.columns:
-                if 'ID' in self.calendar_df.columns:
-                    self.calendar_df['Task_ID'] = self.calendar_df['ID'].astype(str)
-                    logging.info("Created Task_ID column from ID for calendar")
-                elif 'ID' in self.calendar_df.columns:
-                    self.calendar_df['Task_ID'] = self.calendar_df['ID']
-                    logging.info("Used ID column as Task_ID for calendar")
-                else:
-                    raise ValueError("No ID/Task_ID column found in calendar data")
-
-        except Exception as e:
-            logging.error(f"Error in _prepare_data: {str(e)}")
-            raise
+        if 'ID' in self.calendar_df.columns:
+            self.calendar_df['Task_ID'] = self.calendar_df['ID'].astype(str)
+            logging.info("Task_ID column created from ID")
+        else:
+            logging.warning("Calendar has no 'ID' column. Skipping Task_ID creation.")
 
     @lru_cache(maxsize=100)
     def _get_match_direction_description(self, direction):
@@ -265,7 +251,7 @@ class RideAnalyzer:
     def process_calendar_entry(self, calendar_entry):
         """Full processing pipeline for a calendar entry"""
         try:
-            task_id = calendar_entry.get('Task_ID', calendar_entry.get('ID', 'Unknown'))
+            task_id = calendar_entry.get('ID', calendar_entry.get('ID', 'Unknown'))
             logging.info(f"Processing calendar entry ID: {task_id}")
 
             matches = self.filter_matches_for_calendar(task_id)
@@ -304,7 +290,7 @@ class RideAnalyzer:
                 logging.info(f"Processing {len(self.calendar_df)} calendar entries")
                 for _, calendar_entry in self.calendar_df.iterrows():
                     try:
-                        matches = self.filter_matches_for_calendar(calendar_entry.get('Task_ID', 'Unknown'))
+                        matches = self.filter_matches_for_calendar(calendar_entry.get('ID', 'Unknown'))
                         prompt = self.create_calendar_prompt(calendar_entry, matches)
                         response = ask_deepseek(prompt)
 
@@ -312,14 +298,14 @@ class RideAnalyzer:
                         if analysis:
                             send_telegram_message_with_metadata(analysis)
                             calendar_results.append({
-                                "ID": calendar_entry.get("Task_ID", calendar_entry.get("ID")),
+                                "ID": calendar_entry.get("ID", calendar_entry.get("ID")),
                                 "analysis": analysis,
                                 "telegram_sent": True
                             })
 
                     except Exception as e:
                         logging.error(
-                            f"Error processing calendar entry {calendar_entry.get('Task_ID', 'Unknown')}: {str(e)}")
+                            f"Error processing calendar entry {calendar_entry.get('ID', 'Unknown')}: {str(e)}")
 
             return (ride_results, calendar_results) if return_metadata else len(ride_results) + len(calendar_results)
 

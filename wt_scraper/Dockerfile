@@ -7,7 +7,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy utils and application code
-COPY utils/ /app/utils/
+
 COPY . .
 
-CMD ["python", "wt_scraper.py"]
+CMD ["python", "wtmain.py"]

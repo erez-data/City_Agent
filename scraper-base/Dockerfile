@@ -1,14 +1,13 @@
 # Base image
-FROM python:3.10-slim
+# Use full Debian to support older Chrome dependencies
+FROM python:3.10-bullseye
 
-# Set environment variables
 ENV TZ=Europe/Istanbul
 ENV LANG=tr_TR.UTF-8
 ENV LANGUAGE=tr_TR:tr
 ENV LC_ALL=tr_TR.UTF-8
 ENV PYTHONPATH=/app:/app/utils
 
-# Install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     wget curl unzip gnupg2 \
@@ -16,12 +15,14 @@ RUN apt-get update && \
     fonts-liberation libappindicator3-1 libasound2 \
     libatk-bridge2.0-0 libatk1.0-0 libcups2 libdbus-1-3 \
     libgdk-pixbuf2.0-0 libnspr4 libnss3 libx11-xcb1 \
-    libxcomposite1 libxdamage1 libxrandr2 xdg-utils && \
+    libxcomposite1 libxdamage1 libxrandr2 xdg-utils \
+    libdrm2 libgbm1 libu2f-udev libvulkan1 && \
     echo "tr_TR.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen && \
     ln -fs /usr/share/zoneinfo/Europe/Istanbul /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Download and install Google Chrome 114.0.5735.90 from University of Chicago mirror
 WORKDIR /tmp

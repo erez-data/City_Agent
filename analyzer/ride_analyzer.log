@@ -174,3 +174,108 @@
 2025-04-24 23:49:14,164 - INFO - Processing ride ID: wt_Premium_Economy_PKW_2025-04-28_22:35:00_Dalaman_In_Grand_Pres
 2025-04-24 23:49:41,298 - INFO - Processing ride ID: elife_Sedan_2025-05-25_22:20_PM_Dalaman_Ai_Sea_Star_M
 2025-04-24 23:50:06,205 - INFO - Processing 13 calendar entries
+2025-04-25 07:29:04,341 - INFO - Preparing data...
+2025-04-25 07:29:04,342 - INFO - ride_datetime converted to datetime
+2025-04-25 07:29:04,343 - INFO - Ride_Time converted to datetime
+2025-04-25 07:29:04,343 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:29:04,343 - INFO - Match_Time converted to datetime
+2025-04-25 07:29:04,344 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:29:04,344 - INFO - last_updated converted to datetime
+2025-04-25 07:29:04,344 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:29:48,657 - INFO - Preparing data...
+2025-04-25 07:29:48,657 - INFO - ride_datetime converted to datetime
+2025-04-25 07:29:48,657 - INFO - Ride_Time converted to datetime
+2025-04-25 07:29:48,657 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:29:48,657 - INFO - Match_Time converted to datetime
+2025-04-25 07:29:48,659 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:29:48,659 - INFO - last_updated converted to datetime
+2025-04-25 07:29:48,659 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:30:32,732 - INFO - Preparing data...
+2025-04-25 07:30:32,732 - INFO - ride_datetime converted to datetime
+2025-04-25 07:30:32,733 - INFO - Ride_Time converted to datetime
+2025-04-25 07:30:32,734 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:30:32,734 - INFO - Match_Time converted to datetime
+2025-04-25 07:30:32,734 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:30:32,735 - INFO - last_updated converted to datetime
+2025-04-25 07:30:32,735 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:31:16,841 - INFO - Preparing data...
+2025-04-25 07:31:16,841 - INFO - ride_datetime converted to datetime
+2025-04-25 07:31:16,841 - INFO - Ride_Time converted to datetime
+2025-04-25 07:31:16,842 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:31:16,842 - INFO - Match_Time converted to datetime
+2025-04-25 07:31:16,842 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:31:16,842 - INFO - last_updated converted to datetime
+2025-04-25 07:31:16,843 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:32:01,097 - INFO - Preparing data...
+2025-04-25 07:32:01,097 - INFO - ride_datetime converted to datetime
+2025-04-25 07:32:01,098 - INFO - Ride_Time converted to datetime
+2025-04-25 07:32:01,098 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:32:01,100 - INFO - Match_Time converted to datetime
+2025-04-25 07:32:01,100 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:32:01,100 - INFO - last_updated converted to datetime
+2025-04-25 07:32:01,100 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:32:45,332 - INFO - Preparing data...
+2025-04-25 07:32:45,332 - INFO - ride_datetime converted to datetime
+2025-04-25 07:32:45,333 - INFO - Ride_Time converted to datetime
+2025-04-25 07:32:45,333 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:32:45,334 - INFO - Match_Time converted to datetime
+2025-04-25 07:32:45,334 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:32:45,334 - INFO - last_updated converted to datetime
+2025-04-25 07:32:45,334 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:33:29,526 - INFO - Preparing data...
+2025-04-25 07:33:29,527 - INFO - ride_datetime converted to datetime
+2025-04-25 07:33:29,527 - INFO - Ride_Time converted to datetime
+2025-04-25 07:33:29,527 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:33:29,528 - INFO - Match_Time converted to datetime
+2025-04-25 07:33:29,528 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:33:29,528 - INFO - last_updated converted to datetime
+2025-04-25 07:33:29,528 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:34:13,659 - INFO - Preparing data...
+2025-04-25 07:34:13,659 - INFO - ride_datetime converted to datetime
+2025-04-25 07:34:13,660 - INFO - Ride_Time converted to datetime
+2025-04-25 07:34:13,661 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:34:13,661 - INFO - Match_Time converted to datetime
+2025-04-25 07:34:13,662 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:34:13,662 - INFO - last_updated converted to datetime
+2025-04-25 07:34:13,662 - ERROR - Error in _prepare_data: No ID/Task_ID column found in calendar data
+2025-04-25 07:45:49,854 - INFO - Preparing data...
+2025-04-25 07:45:49,854 - INFO - ride_datetime converted to datetime
+2025-04-25 07:45:49,855 - INFO - Ride_Time converted to datetime
+2025-04-25 07:45:49,855 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:45:49,856 - INFO - Match_Time converted to datetime
+2025-04-25 07:45:49,856 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:45:49,856 - INFO - last_updated converted to datetime
+2025-04-25 07:45:49,856 - ERROR - Error in _prepare_data: No ID column found in calendar data
+2025-04-25 07:46:33,997 - INFO - Preparing data...
+2025-04-25 07:46:33,997 - INFO - ride_datetime converted to datetime
+2025-04-25 07:46:33,997 - INFO - Ride_Time converted to datetime
+2025-04-25 07:46:33,998 - INFO - Ride_Arrival converted to datetime
+2025-04-25 07:46:33,998 - INFO - Match_Time converted to datetime
+2025-04-25 07:46:33,998 - INFO - Match_Arrival converted to datetime
+2025-04-25 07:46:33,999 - INFO - last_updated converted to datetime
+2025-04-25 07:46:33,999 - ERROR - Error in _prepare_data: No ID column found in calendar data
+2025-04-25 08:04:17,160 - INFO - Preparing data...
+2025-04-25 08:04:17,162 - INFO - ride_datetime converted to datetime
+2025-04-25 08:04:17,163 - INFO - Ride_Time converted to datetime
+2025-04-25 08:04:17,164 - INFO - Ride_Arrival converted to datetime
+2025-04-25 08:04:17,165 - INFO - Match_Time converted to datetime
+2025-04-25 08:04:17,166 - INFO - Match_Arrival converted to datetime
+2025-04-25 08:04:17,167 - INFO - last_updated converted to datetime
+2025-04-25 08:04:17,167 - WARNING - Calendar DataFrame is empty. Skipping calendar processing.
+2025-04-25 08:04:17,168 - INFO - Processing 4 rides
+2025-04-25 08:04:17,169 - INFO - Processing ride ID: elife_Sedan_2025-04-30_16:20_PM_Dalaman_Ai_L_HOTEL_Sa
+2025-04-25 08:04:45,261 - INFO - Processing ride ID: elife_Sedan_2025-05-04_04:05_AM_L_HOTEL_Sa_Dalaman_Ai
+2025-04-25 08:05:12,584 - INFO - Processing ride ID: wt_Premium_Economy_PKW_2025-05-18_21:45:00_Dalaman_In_/_Dalyan,_
+2025-04-25 08:05:41,790 - INFO - Processing ride ID: elife_MPV-4_2025-04-30_15:00_PM_Dalaman_In_Gizz_Suite
+2025-04-25 08:17:31,394 - INFO - Preparing data...
+2025-04-25 08:17:31,395 - INFO - ride_datetime converted to datetime
+2025-04-25 08:17:31,396 - INFO - Ride_Time converted to datetime
+2025-04-25 08:17:31,396 - INFO - Ride_Arrival converted to datetime
+2025-04-25 08:17:31,398 - INFO - Match_Time converted to datetime
+2025-04-25 08:17:31,398 - INFO - Match_Arrival converted to datetime
+2025-04-25 08:17:31,399 - INFO - last_updated converted to datetime
+2025-04-25 08:17:31,399 - WARNING - Calendar DataFrame columns: ['_id', 'ID', 'Status', 'API_Status', 'Title', 'Notes', 'Transfer_Datetime', 'Transfer_Time', 'Pickup', 'Dropoff', 'Due', 'Updated', 'FirstSeen', 'LastSeen', 'Task_ID', 'Source', 'Distance', 'DistanceStatus', 'Distance_meters', 'Dropoff_lat', 'Dropoff_lon', 'Duration', 'Duration_seconds', 'GeoStatus', 'Pickup_lat', 'Pickup_lon', 'MatchAnalyzed', 'AnalysisDatetime', 'AnalysisResponse', 'Analyzed', 'TelegramSent']
+2025-04-25 08:17:31,403 - INFO - Task_ID column created from ID
+2025-04-25 08:17:31,403 - INFO - Processing 1 rides
+2025-04-25 08:17:31,404 - INFO - Processing ride ID: elife_Minibus-8_2025-04-26_20:40_PM_Club_Munam_Dalaman_Ai
+2025-04-25 08:18:00,033 - INFO - Processing 1 calendar entries
