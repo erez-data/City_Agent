@@ -1,4 +1,4 @@
-FROM scraper-base:latest
+FROM cityagent-scraper-base:latest
 
 WORKDIR /app
 
@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY utils/ /app/utils/
 COPY . .
 
-CMD ["python", "elife_scraper.py"]
+CMD ["python", "wt_scraper.py"]

@@ -1,109 +1,105 @@
 version: '3.8'
 
 services:
-  # Base image for Chrome-dependent services
+  # Base image builder
   scraper-base:
-    build: ./scraper-base
+    build:
+      context: .
+      dockerfile: ./scraper-base/Dockerfile
     image: cityagent-scraper-base:latest
 
   # Chrome-dependent services
   elife_scraper:
     build:
-      context: ./elife_scraper
-      dockerfile: Dockerfile.chrome  # Save the Chrome Dockerfile as this
+      context: .
+      dockerfile: ./elife_scraper/Dockerfile
     image: cityagent-elife-scraper:latest
+    depends_on:
+      - scraper-base
     env_file: .env
+    volumes:
+      - ./utils:/app/utils:ro
     deploy:
       resources:
         limits:
           memory: 512M
           cpus: '0.25'
     restart: always
-    volumes:
-      - type: bind
-        source: ./utils
-        target: /app/utils
-        read_only: true
 
   wt_scraper:
     build:
-      context: ./wt_scraper
-      dockerfile: Dockerfile.chrome
+      context: .
+      dockerfile: ./wt_scraper/Dockerfile
     image: cityagent-wt-scraper:latest
+    depends_on:
+      - scraper-base
     env_file: .env
+    volumes:
+      - ./utils:/app/utils:ro
     deploy:
       resources:
         limits:
           memory: 512M
           cpus: '0.25'
     restart: always
-    volumes:
-      - type: bind
-        source: ./utils
-        target: /app/utils
-        read_only: true
 
   # Non-Chrome services
   analyzer:
-    build: ./analyzer
+    build:
+      context: .
+      dockerfile: ./analyzer/Dockerfile
     image: cityagent-analyzer:latest
     env_file: .env
+    volumes:
+      - ./utils:/app/utils:ro
     deploy:
       resources:
         limits:
           memory: 512M
           cpus: '0.25'
     restart: always
-    volumes:
-      - type: bind
-        source: ./utils
-        target: /app/utils
-        read_only: true
 
   calendar_scraper:
-    build: ./calendar_scraper
+    build:
+      context: .
+      dockerfile: ./calendar_scraper/Dockerfile
     image: cityagent-calendar-scraper:latest
     env_file: .env
+    volumes:
+      - ./utils:/app/utils:ro
     deploy:
       resources:
         limits:
           memory: 512M
           cpus: '0.25'
     restart: always
-    volumes:
-      - type: bind
-        source: ./utils
-        target: /app/utils
-        read_only: true
 
   geo:
-    build: ./geo
+    build:
+      context: .
+      dockerfile: ./geo/Dockerfile
     image: cityagent-geo:latest
     env_file: .env
+    volumes:
+      - ./utils:/app/utils:ro
     deploy:
       resources:
         limits:
           memory: 512M
           cpus: '0.25'
     restart: always
-    volumes:
-      - type: bind
-        source: ./utils
-        target: /app/utils
-        read_only: true
 
   match:
-    build: ./match
+    build:
+      context: .
+      dockerfile: ./match/Dockerfile
     image: cityagent-match:latest
     env_file: .env
+    volumes:
+      - ./utils:/app/utils:ro
     deploy:
       resources:
         limits:
           memory: 512M
           cpus: '0.25'
     restart: always
-    volumes:
-      - type: bind
-        source: ./utils
-        target: /app/utils
-        read_only: true

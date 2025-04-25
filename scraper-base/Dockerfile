@@ -1,8 +1,14 @@
-# Optimized for Chrome-dependent services (elife_scraper, wt_scraper)
+# Base image
 FROM python:3.10-slim
 
-# Set timezone and locales
+# Set environment variables
 ENV TZ=Europe/Istanbul
+ENV LANG=tr_TR.UTF-8
+ENV LANGUAGE=tr_TR:tr
+ENV LC_ALL=tr_TR.UTF-8
+ENV PYTHONPATH=/app:/app/utils
+
+# Install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     wget curl unzip gnupg2 \
@@ -17,23 +23,19 @@ RUN apt-get update && \
     dpkg-reconfigure -f noninteractive tzdata && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables
-ENV LANG=tr_TR.UTF-8 \
-    LANGUAGE=tr_TR:tr \
-    LC_ALL=tr_TR.UTF-8 \
-    PYTHONPATH=/app:/app/utils
-
-# Install Chrome (v115.0.5790.114 - newer stable version)
-ENV CHROME_VERSION="115.0.5790.114-1"
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+# Install Google Chrome
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | \
+    gpg --dearmor -o /usr/share/keyrings/google-linux-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > \
+    /etc/apt/sources.list.d/google-chrome.list && \
     apt-get update && \
-    apt-get install -y google-chrome-stable=${CHROME_VERSION} && \
+    apt-get install -y google-chrome-stable && \
     rm -rf /var/lib/apt/lists/*
 
-# Install matching Chromedriver
-ENV CHROMEDRIVER_VERSION="115.0.5790.114"
-RUN wget -q https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip && \
+# Install ChromeDriver
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
+    CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION") && \
+    wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" && \
     unzip chromedriver_linux64.zip && \
     mv chromedriver /usr/local/bin/chromedriver && \
     chmod +x /usr/local/bin/chromedriver && \

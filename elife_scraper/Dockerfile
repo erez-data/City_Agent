@@ -1,4 +1,4 @@
-FROM scraper-base:latest
+FROM cityagent-scraper-base:latest
 
 WORKDIR /app
 
