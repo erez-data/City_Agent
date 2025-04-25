@@ -27,4 +27,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "calendar_main.py"]
+CMD ["python", "-u", "calendar_main.py"]

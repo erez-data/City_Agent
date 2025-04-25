@@ -27,4 +27,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "match_main.py"]
+CMD ["python", "-u", "match_main.py"]

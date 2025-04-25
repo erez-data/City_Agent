@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "elife_main.py"]
+CMD ["python", "-u", "elife_main.py"]
