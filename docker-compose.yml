@@ -68,3 +68,16 @@ services:
     volumes:
       - ./utils:/app/utils:ro
     restart: always
+
+  # 🆕 [ADDED] Dashboard Service for Streamlit App
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Ana proje dizinindeki Dockerfile kullanılıyor
+    image: cityagent-dashboard:latest
+    env_file: .env
+    volumes:
+      - ./utils:/app/utils:ro
+    ports:
+      - "8501:8501"  # Streamlit için dışa açılan port
+    restart: always
