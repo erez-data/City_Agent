@@ -57,9 +57,9 @@ class WTScraperZoomScroll:
             time.sleep(4)
 
             print("🧩 Sending 25 TABs to focus booking list...")
-            for _ in range(25):
+            for _ in range(30):
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
-                time.sleep(0.1)
+                time.sleep(0.03)
         except Exception as e:
             print(f"[WARN] Tab switching failed: {e}")
 
@@ -67,7 +67,7 @@ class WTScraperZoomScroll:
         print("⬇️ Scrolling to bottom using ARROW_DOWN...")
         for i in range(max_scrolls):
             ActionChains(self.driver).send_keys(Keys.ARROW_DOWN).perform()
-            time.sleep(0.1)
+            time.sleep(0.03)
 
     def cache_page_source(self):
         print("💾 Caching page source...")

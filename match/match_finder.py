@@ -13,6 +13,8 @@ class MatchFinder:
         self.HOME_RADIUS_KM = 10
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
+        self.logged_invalid_rides = set()  # 🆕 invalid kayıtları sadece bir kez logla
+        self.logged_invalid_candidates = set()
 
     def is_near_home(self, coords):
         return geodesic(self.HOME_BASE_COORDS, coords).km <= self.HOME_RADIUS_KM
@@ -46,19 +48,25 @@ class MatchFinder:
         return 0 <= wait_time <= 90 and distance_km <= self.MAX_DISTANCE_KM
 
     def determine_direction(self, ride, match, match_source):
-        match_time = match['ride_datetime'] if match_source == 'Rides' else match['Transfer_Datetime']
-        match_dropoff = (match['Dropoff_lat'], match['Dropoff_lon'])
+        try:
+            match_time = match['ride_datetime'] if match_source == 'Rides' else match['Transfer_Datetime']
+            match_dropoff = (match['Dropoff_lat'], match['Dropoff_lon'])
 
-        ride_time = ride['ride_datetime']
-        ride_pickup = (ride['Pickup_lat'], ride['Pickup_lon'])
-        ride_dropoff = (ride['Dropoff_lat'], ride['Dropoff_lon'])
+            ride_time = ride['ride_datetime']
+            ride_pickup = (ride['Pickup_lat'], ride['Pickup_lon'])
+            ride_dropoff = (ride['Dropoff_lat'], ride['Dropoff_lon'])
 
-        if self.is_near_home(match_dropoff):
-            if geodesic(ride_pickup, match_dropoff).km <= self.MAX_DISTANCE_KM and match_time > ride_time:
-                return "Home Return"
-        if not self.is_near_home(ride_pickup) and not self.is_near_home(match_dropoff):
-            return "Away Return"
-        return "Unknown"
+            if not self.is_valid_coords(*ride_pickup) or not self.is_valid_coords(*match_dropoff):
+                return "Unknown"
+
+            if self.is_near_home(match_dropoff):
+                if geodesic(ride_pickup, match_dropoff).km <= self.MAX_DISTANCE_KM and match_time > ride_time:
+                    return "Home Return"
+            if not self.is_near_home(ride_pickup) and not self.is_near_home(match_dropoff):
+                return "Away Return"
+            return "Unknown"
+        except Exception:
+            return "Unknown"
 
     def mark_old_matches_outdated(self, ride_ids):
         result = self.match_col.update_many(
@@ -69,28 +77,44 @@ class MatchFinder:
 
     def find_matches(self, rides, calendar):
         results = []
+
         for ride in rides:
-            matches = []
             ride_arrival = self.calculate_arrival(ride['ride_datetime'], ride.get("Duration_seconds", 0))
             ride_dropoff_coords = (ride['Dropoff_lat'], ride['Dropoff_lon'])
+
+            if not self.is_valid_coords(*ride_dropoff_coords):
+                if ride['ID'] not in self.logged_invalid_rides:
+                    print(f"⚠️ [Invalid Ride Dropoff] Ride ID {ride['ID']} atlanıyor.")
+                    self.logged_invalid_rides.add(ride['ID'])
+                continue
+
+            matches = []
 
             for candidate in rides:
                 if ride['ID'] == candidate['ID']:
                     continue
+
+                candidate_pickup = (candidate['Pickup_lat'], candidate['Pickup_lon'])
+
+                if not self.is_valid_coords(*candidate_pickup):
+                    if candidate['ID'] not in self.logged_invalid_candidates:
+                        print(f"⚠️ [Invalid Candidate Pickup] Ride ID {candidate['ID']} atlanıyor.")
+                        self.logged_invalid_candidates.add(candidate['ID'])
+                    continue
+
                 candidate_departure = candidate['ride_datetime']
                 candidate_arrival = self.calculate_arrival(candidate_departure, candidate.get("Duration_seconds", 0))
                 if candidate_departure < ride_arrival:
                     continue
 
-                dist_km = geodesic(ride_dropoff_coords, (candidate['Pickup_lat'], candidate['Pickup_lon'])).km
+                dist_km = geodesic(ride_dropoff_coords, candidate_pickup).km
                 if dist_km > self.MAX_DISTANCE_KM:
                     continue
                 time_diff = (candidate_departure - ride_arrival).total_seconds() / 60
                 if time_diff > self.MAX_TIME_DIFF_MIN:
                     continue
 
-                real_dist_km, real_dur_min = self.get_real_distance(
-                    ride_dropoff_coords, (candidate['Pickup_lat'], candidate['Pickup_lon']))
+                real_dist_km, real_dur_min = self.get_real_distance(ride_dropoff_coords, candidate_pickup)
 
                 matches.append({
                     "Match Source": "Rides",
@@ -107,25 +131,32 @@ class MatchFinder:
                     "Matched Dropoff": candidate["Dropoff"],
                     "DoubleUtilized": self.is_double_utilized(
                         ride_arrival, candidate_departure,
-                        ride_dropoff_coords, (candidate['Pickup_lat'], candidate['Pickup_lon'])
+                        ride_dropoff_coords, candidate_pickup
                     )
                 })
 
             for task in calendar:
+                task_pickup = (task['Pickup_lat'], task['Pickup_lon'])
+
+                if not self.is_valid_coords(*task_pickup):
+                    if task['ID'] not in self.logged_invalid_candidates:
+                        print(f"⚠️ [Invalid Calendar Pickup] Task ID {task['ID']} atlanıyor.")
+                        self.logged_invalid_candidates.add(task['ID'])
+                    continue
+
                 task_departure = task['Transfer_Datetime']
                 task_arrival = self.calculate_arrival(task_departure, task.get("Duration_seconds", 0))
                 if task_departure < ride_arrival:
                     continue
 
-                dist_km = geodesic(ride_dropoff_coords, (task['Pickup_lat'], task['Pickup_lon'])).km
+                dist_km = geodesic(ride_dropoff_coords, task_pickup).km
                 if dist_km > self.MAX_DISTANCE_KM:
                     continue
                 time_diff = (task_departure - ride_arrival).total_seconds() / 60
                 if time_diff > self.MAX_TIME_DIFF_MIN:
                     continue
 
-                real_dist_km, real_dur_min = self.get_real_distance(
-                    ride_dropoff_coords, (task['Pickup_lat'], task['Pickup_lon']))
+                real_dist_km, real_dur_min = self.get_real_distance(ride_dropoff_coords, task_pickup)
 
                 matches.append({
                     "Match Source": "Calendar",
@@ -142,7 +173,7 @@ class MatchFinder:
                     "Matched Dropoff": task["Dropoff"],
                     "DoubleUtilized": self.is_double_utilized(
                         ride_arrival, task_departure,
-                        ride_dropoff_coords, (task['Pickup_lat'], task['Pickup_lon'])
+                        ride_dropoff_coords, task_pickup
                     )
                 })
 
@@ -156,6 +187,17 @@ class MatchFinder:
             })
 
         return results
+
+    @staticmethod
+    def is_valid_coords(lat, lon):
+        try:
+            return (
+                lat is not None and lon is not None and
+                isinstance(lat, (int, float)) and isinstance(lon, (int, float)) and
+                not (lat != lat or lon != lon)  # NaN kontrolü
+            )
+        except Exception:
+            return False
 
     def flatten_results(self, results):
         output = []

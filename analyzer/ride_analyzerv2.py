@@ -4,15 +4,32 @@ from send_TG_message import send_telegram_message_with_metadata
 from utils.currency_info import get_eur_try
 import logging
 from functools import lru_cache
+from utils.mongodb_utils import get_mongo_collection  # 🆕 MongoDB bağlantı için
+from datetime import datetime
 
-# Logging konfigürasyonu
+class MongoDBLogHandler(logging.Handler):
+    def __init__(self):
+        super().__init__()
+        self.collection = get_mongo_collection("ride_analyzer_logs")
+
+    def emit(self, record):
+        log_entry = {
+            "level": record.levelname,
+            "message": self.format(record),
+            "time": datetime.now()
+        }
+        try:
+            self.collection.insert_one(log_entry)
+        except Exception as e:
+            print(f"⚠️ [MongoLogger] DB yazım hatası: {e}")
+
+# Asıl logger ayarı:
+mongo_handler = MongoDBLogHandler()
+mongo_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('ride_analyzer.log'),
-        logging.StreamHandler()
-    ]
+    handlers=[mongo_handler, logging.StreamHandler()]  # 🔥 Dosya yok, sadece Mongo + Terminal
 )
 
 

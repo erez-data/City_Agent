@@ -7,12 +7,14 @@ from collections import Counter
 from wt_login import WTAutoLogin
 from wt_scv2 import WTScraperZoomScroll
 from utils.mongodb_utils import get_mongo_collection
+import atexit  # dosyanın en başına
 
 
 class PersistentSession:
     def __init__(self):
         self.session = None
         self.driver = None
+        atexit.register(self.cleanup_on_exit)
 
     def ensure_login(self):
         if not self.session:
@@ -31,6 +33,16 @@ class PersistentSession:
                 pass
         self.session = None
         self.driver = None
+
+    def cleanup_on_exit(self):
+        if self.session:
+            print("🛑 [EXIT] Browser kapatılıyor...")
+            try:
+                self.session.close()
+            except Exception as e:
+                print(f"⚠️ [EXIT] Driver kapatılırken hata oluştu: {e}")
+        else:
+            print("ℹ️ [EXIT] Oturum zaten kapalı.")
 
 
 persistent = PersistentSession()

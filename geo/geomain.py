@@ -44,7 +44,9 @@ class MainGeoProcessor:
             "data": data or {}
         }
         print(f"[{entry['timestamp'].strftime('%H:%M:%S')}] [{level.upper()}] {message} | {entry['data']}")
-        self.log_collection.insert_one(entry)
+
+        if level.lower() in ["error", "critical"]:
+            self.log_collection.insert_one(entry)
 
     def fetch_dataframe_from_mongo(self, collection, query):
         docs = list(collection.find(query))
@@ -68,7 +70,9 @@ class MainGeoProcessor:
         to_remove = existing_df.loc[~existing_df.index.isin(new_df.index)]
 
         for doc_id, row in to_update.iterrows():
-            self.rides_collection.update_one({"ID": doc_id}, {"$set": row.to_dict()})
+            row_dict = row.to_dict()
+            row_dict.pop("_id", None)  # _id çıkarıldı
+            self.rides_collection.update_one({"ID": doc_id}, {"$set": row_dict})
 
         if not to_add.empty:
             self.rides_collection.insert_many(to_add.reset_index().to_dict(orient="records"))
@@ -94,6 +98,7 @@ class MainGeoProcessor:
                             rec = self.geo.process_address_fields(rec, source=source)
                             rec = self.dist.enrich_record(rec, source=source)
                             rec["GeoStatus"], rec["DistanceStatus"] = self.update_flags(rec)
+                            rec.pop("_id", None)  # _id çıkarıldı
                             collection.update_one({"ID": rec["ID"]}, {"$set": rec})
                             self.log_event("info", f"✅ Enriched {source} ID: {rec['ID']}", {"GeoStatus": rec["GeoStatus"], "DistanceStatus": rec["DistanceStatus"]})
                         except Exception as e:
@@ -105,7 +110,6 @@ class MainGeoProcessor:
             except Exception as loop_error:
                 self.log_event("critical", "🔥 Enrichment loop crashed", {"error": str(loop_error)})
                 time.sleep(interval)
-
 
 if __name__ == "__main__":
     processor = MainGeoProcessor()
