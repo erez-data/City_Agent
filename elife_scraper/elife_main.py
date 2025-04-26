@@ -2,14 +2,16 @@ import time
 from datetime import datetime, timedelta
 from login import ElifeAutoLogin
 from elife_scraper import ElifeScraper
-from mongodb_utils import get_mongo_collection
+from utils.mongodb_utils import get_mongo_collection
 from collections import Counter
 import traceback
+import atexit  # ✨ NEW: atexit import edildi, shutdown kontrolü için
 
 class PersistentSession:
     def __init__(self):
         self.session = None
         self.driver = None
+        atexit.register(self.cleanup_on_exit)  # ✨ NEW: atexit ile cleanup_on_exit kaydedildi
 
     def ensure_login(self):
         if not self.session:
@@ -29,7 +31,18 @@ class PersistentSession:
         self.session = None
         self.driver = None
 
+    def cleanup_on_exit(self):  # ✨ NEW: Program kapanırken driver'ı güvenli kapatan method
+        if self.session:
+            print("🛑 [EXIT] Browser kapatılıyor...")
+            try:
+                self.session.close()
+            except Exception as e:
+                print(f"⚠️ [EXIT] Driver kapatılırken hata oluştu: {e}")
+        else:
+            print("ℹ️ [EXIT] Oturum zaten kapalı.")
+
 persistent = PersistentSession()
+
 
 def get_mongo_status_summary():
     collection = get_mongo_collection("elife_rides")

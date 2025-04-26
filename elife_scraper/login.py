@@ -8,8 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-from browser_helper import get_chrome_binary_path, get_chromedriver_path
+from utils.browser_helper import get_chrome_binary_path, get_chromedriver_path
 
 class ElifeAutoLogin:
     def __init__(self, headless=True):
