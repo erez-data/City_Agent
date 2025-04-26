@@ -72,7 +72,7 @@ services:
   # 🆕 [ADDED] Dashboard Service for Streamlit App
   dashboard:
     build:
-      context: .
+      context: ./gui
       dockerfile: Dockerfile  # Ana proje dizinindeki Dockerfile kullanılıyor
     image: cityagent-dashboard:latest
     env_file: .env
