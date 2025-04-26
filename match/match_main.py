@@ -53,7 +53,7 @@ def fetch_active_records():
 
 def incremental_save_match_data(new_matches):
     match_col = get_mongo_collection("match_data")
-    now = datetime.utcnow()
+    now = datetime.now()
 
     ride_ids = list(set(m['Ride_ID'] for m in new_matches))
     existing_matches = list(match_col.find({
