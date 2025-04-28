@@ -21,9 +21,8 @@ class MainGeoProcessor:
                 {"GeoStatus": ""},
                 {"DistanceStatus": {"$exists": False}},
                 {"DistanceStatus": ""}
-            ],
-            "Status": {"$ne": "REMOVED"}
-        }
+            ]
+                    }
         return list(collection.find(query)), collection
 
     def update_flags(self, record):
