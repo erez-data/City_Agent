@@ -1,17 +1,22 @@
+# elife_main.py - FINAL manual clean integrated version
+
 import time
+import traceback
+import psutil  # ✅ Yeni: Chrome proseslerini kontrol için
 from datetime import datetime, timedelta
+from collections import Counter
 from login import ElifeAutoLogin
 from elife_scraper import ElifeScraper
 from utils.mongodb_utils import get_mongo_collection
-from collections import Counter
-import traceback
-import atexit  # ✨ NEW: atexit import edildi, shutdown kontrolü için
+from utils.process_helperv2 import ChromeCleaner  # ✅ Yeni: Cleaner import
+import atexit
 
 class PersistentSession:
     def __init__(self):
         self.session = None
         self.driver = None
-        atexit.register(self.cleanup_on_exit)  # ✨ NEW: atexit ile cleanup_on_exit kaydedildi
+        self.cleaner = None
+        atexit.register(self.cleanup_on_exit)
 
     def ensure_login(self):
         if not self.session:
@@ -20,6 +25,12 @@ class PersistentSession:
                 self.session = None
                 raise Exception("🔐 Giriş başarısız")
             self.driver = self.session.get_driver()
+
+            if not self.cleaner:
+                self.cleaner = ChromeCleaner(active_driver=self.driver)
+            else:
+                self.cleaner.active_driver = self.driver
+
         return self.driver
 
     def reset_session(self):
@@ -31,7 +42,7 @@ class PersistentSession:
         self.session = None
         self.driver = None
 
-    def cleanup_on_exit(self):  # ✨ NEW: Program kapanırken driver'ı güvenli kapatan method
+    def cleanup_on_exit(self):
         if self.session:
             print("🛑 [EXIT] Browser kapatılıyor...")
             try:
@@ -42,7 +53,7 @@ class PersistentSession:
             print("ℹ️ [EXIT] Oturum zaten kapalı.")
 
 persistent = PersistentSession()
-
+scraper_cycle_counter = 0  # ✅ Full clean kontrolü için sayaç
 
 def get_mongo_status_summary():
     collection = get_mongo_collection("elife_rides")
@@ -71,23 +82,54 @@ def log_mongo_status(label):
     for key in ["NEW", "ACTIVE", "UPDATED", "REMOVED"]:
         print(f"  - {key}: {summary.get(key, 0)}")
 
+def show_active_chrome_processes(context=""):
+    print(f"\n🛠️ Active Chrome Processes {context}:")
+    for proc in psutil.process_iter(['pid', 'name', 'memory_info']):
+        try:
+            if proc.info['name'] and ('chrome' in proc.info['name'].lower() or 'chromedriver' in proc.info['name'].lower()):
+                mem_mb = (proc.info['memory_info'].rss / 1024 / 1024) if proc.info['memory_info'] else 0
+                print(f"  PID {proc.pid} - {proc.info['name']} - {mem_mb:.1f} MB")
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+
 def run_scraper_loop(interval=60):
-    print("\n=== Elife Scraper Başlatılıyor ===")
+    global scraper_cycle_counter
     login_attempts = 0
 
     while True:
         try:
-            log_mongo_status("🟡 Öncesi")
+            print(f"\n=== Elife Scraper Başlatılıyor: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
 
             driver = persistent.ensure_login()
+
+            show_active_chrome_processes("(before scraping)")
+
             scraper = ElifeScraper(driver)
             scraped_ids = scraper.run_scraping_cycle()
 
             remove_old_removed_entries()
             log_mongo_status("🟢 Sonrası")
 
+            show_active_chrome_processes("(after scraping)")
+
+            if persistent.cleaner:
+                persistent.cleaner.manual_clean(force_full_clean=False)
+
+            scraper_cycle_counter += 1
+            if scraper_cycle_counter >= 5:
+                print("\n💥 5 scraping sonrası FULL CLEAN yapılıyor...")
+
+                if persistent.cleaner:
+                    persistent.cleaner.manual_clean(force_full_clean=True)
+
+                print("♻️ FULL CLEAN sonrası yeni oturum açılıyor...")
+                persistent.reset_session()
+                persistent.ensure_login()
+
+                scraper_cycle_counter = 0
+
             login_attempts = 0
-            print(f"⏱️ {interval} saniye sonra tekrar denenecek...")
+            print(f"⏱️ {interval} saniye sonra tekrar çalışacak...")
             time.sleep(interval)
 
         except KeyboardInterrupt:
@@ -102,7 +144,7 @@ def run_scraper_loop(interval=60):
                 print("❌ 3 kez üst üste hata alındı. Döngü durduruluyor.")
                 break
             else:
-                print("🔁 Oturum yenileniyor, 30 sn sonra tekrar deneniyor...")
+                print("🔁 30 sn sonra yeni login deneniyor...")
                 time.sleep(30)
 
 if __name__ == "__main__":
