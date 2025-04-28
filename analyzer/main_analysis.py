@@ -44,7 +44,9 @@ def fetch_analysis_candidates():
         print("First calendar ID:", calendar[0].get('ID', calendar[0].get('ID', 'N/A')))
 
     print("\n🔄 Fetching match data...")
-    matches = list(match_col.find({}))
+    matches = list(match_col.find({
+        "MatchStatus": "Active"
+    }))
     print(f"📊 Found {len(matches)} matches")
 
     return rides, calendar, matches
