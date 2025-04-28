@@ -1,19 +1,21 @@
-# wt_main.py - Debug-enhanced + REACTIVATION support for REMOVED rides
+# wt_main.py - FINAL manual clean integrated version
 
 import time
 import traceback
+import psutil  # ✅ Eksik olan import tamamlandı
 from datetime import datetime, timedelta
 from collections import Counter
 from wt_login import WTAutoLogin
 from wt_scv2 import WTScraperZoomScroll
 from utils.mongodb_utils import get_mongo_collection
-import atexit  # dosyanın en başına
-
+from utils.process_helperv2 import ChromeCleaner  # ✅ Cleaner import
+import atexit
 
 class PersistentSession:
     def __init__(self):
         self.session = None
         self.driver = None
+        self.cleaner = None
         atexit.register(self.cleanup_on_exit)
 
     def ensure_login(self):
@@ -23,6 +25,12 @@ class PersistentSession:
                 self.session = None
                 raise Exception("🔐 Giriş başarısız")
             self.driver = self.session.get_driver()
+
+            if not self.cleaner:
+                self.cleaner = ChromeCleaner(active_driver=self.driver)
+            else:
+                self.cleaner.active_driver = self.driver
+
         return self.driver
 
     def reset_session(self):
@@ -44,9 +52,8 @@ class PersistentSession:
         else:
             print("ℹ️ [EXIT] Oturum zaten kapalı.")
 
-
 persistent = PersistentSession()
-
+scraper_cycle_counter = 0  # ✅ Full clean kontrolü için sayaç
 
 def get_mongo_status_summary():
     collection = get_mongo_collection("wt_rides")
@@ -56,14 +63,11 @@ def get_mongo_status_summary():
         status_counts[status] += 1
     return status_counts
 
-
 def save_to_mongodb(df):
     try:
         collection = get_mongo_collection("wt_rides")
         now = datetime.now()
         all_ids = set(df["ID"])
-
-        print(f"🧮 Gelen {len(df)} kaydın ID'leri: {list(all_ids)[:5]} ...")
 
         new_count = 0
         updated_count = 0
@@ -76,23 +80,12 @@ def save_to_mongodb(df):
 
             if existing:
                 if existing.get("Status") == "REMOVED":
-                    row_dict["FirstSeen"] = now
-                    row_dict["LastSeen"] = now
-                    row_dict["Status"] = "NEW"
-                    row_dict["Source"] = "wt"
+                    row_dict.update({"FirstSeen": now, "LastSeen": now, "Status": "NEW", "Source": "wt"})
                     collection.update_one({"ID": ride_id}, {"$set": row_dict})
                     reactivated_count += 1
-                    print(f"♻️ [REACTIVATED] {ride_id} (was REMOVED)")
                     continue
 
-                updates = {}
-                first_seen = existing.get("FirstSeen")
-                if isinstance(first_seen, str):
-                    first_seen = datetime.fromisoformat(first_seen)
-                age_minutes = (now - first_seen).total_seconds() / 60
-                if existing.get("Status") in ["NEW", "UPDATED"] and age_minutes > 10:
-                    updates["Status"] = "ACTIVE"
-                updates.update({
+                updates = {
                     "LastSeen": now,
                     "Vehicle": row_dict.get("Vehicle"),
                     "Pickup": row_dict.get("Pickup"),
@@ -102,17 +95,19 @@ def save_to_mongodb(df):
                     "Price": row_dict.get("Price"),
                     "IsNewBadge": row_dict.get("IsNewBadge"),
                     "Source": "wt"
-                })
+                }
+                first_seen = existing.get("FirstSeen")
+                if isinstance(first_seen, str):
+                    first_seen = datetime.fromisoformat(first_seen)
+                age_minutes = (now - first_seen).total_seconds() / 60
+                if existing.get("Status") in ["NEW", "UPDATED"] and age_minutes > 10:
+                    updates["Status"] = "ACTIVE"
                 collection.update_one({"ID": ride_id}, {"$set": updates})
                 updated_count += 1
             else:
-                row_dict["FirstSeen"] = now
-                row_dict["LastSeen"] = now
-                row_dict["Status"] = "NEW"
-                row_dict["Source"] = "wt"
+                row_dict.update({"FirstSeen": now, "LastSeen": now, "Status": "NEW", "Source": "wt"})
                 collection.insert_one(row_dict)
                 new_count += 1
-                print(f"➕ [INSERT] {ride_id} → {row_dict.get('Pickup')} → {row_dict.get('Dropoff')}")
 
         removed_count = 0
         for doc in collection.find({"Source": "wt"}):
@@ -120,62 +115,77 @@ def save_to_mongodb(df):
                 collection.update_one({"ID": doc["ID"]}, {"$set": {"Status": "REMOVED", "LastSeen": now}})
                 removed_count += 1
 
-        print(f"✅ MongoDB: {len(df)} kayıt işlendi → NEW: {new_count}, REACTIVATED: {reactivated_count}, UPDATED: {updated_count}, REMOVED: {removed_count}")
+        print(f"✅ MongoDB kayıtları: NEW {new_count}, REACTIVATED {reactivated_count}, UPDATED {updated_count}, REMOVED {removed_count}")
 
     except Exception as e:
         print(f"❌ MongoDB kayıt hatası: {e}")
         traceback.print_exc()
 
-
 def remove_old_removed_entries():
     try:
         collection = get_mongo_collection("wt_rides")
         cutoff_time = datetime.now() - timedelta(days=1)
-        result = collection.delete_many({
-            "Status": "REMOVED",
-            "LastSeen": {"$lt": cutoff_time}
-        })
+        result = collection.delete_many({"Status": "REMOVED", "LastSeen": {"$lt": cutoff_time}})
         if result.deleted_count:
             print(f"🗑️ {result.deleted_count} eski REMOVED kayıt silindi.")
     except Exception as e:
         print(f"⚠️ REMOVED kayıt silme hatası: {e}")
 
-
-def log_mongo_status(label):
-    summary = get_mongo_status_summary()
-    print(f"\n📊 MongoDB Durumu ({label}):")
-    for key in ["NEW", "ACTIVE", "UPDATED", "REMOVED"]:
-        print(f"  - {key}: {summary.get(key, 0)}")
-
+def show_active_chrome_processes(context=""):
+    print(f"\n🛠️ Active Chrome Processes {context}:")
+    for proc in psutil.process_iter(['pid', 'name', 'memory_info']):
+        try:
+            if proc.info['name'] and ('chrome' in proc.info['name'].lower() or 'chromedriver' in proc.info['name'].lower()):
+                mem_mb = (proc.info['memory_info'].rss / 1024 / 1024) if proc.info['memory_info'] else 0
+                print(f"  PID {proc.pid} - {proc.info['name']} - {mem_mb:.1f} MB")
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
 
 def run_scraper_loop(interval=60):
+    global scraper_cycle_counter
     login_attempts = 0
+
     while True:
         try:
             print(f"\n=== WT Scraper Başlatılıyor: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
-            log_mongo_status("🟡 Öncesi")
 
             driver = persistent.ensure_login()
+
+            show_active_chrome_processes("(before scraping)")
+
             scraper = WTScraperZoomScroll(driver=driver, csv_path=None)
             df, raw_card_count, parsed_count = scraper.run_scraping_cycle()
 
             if parsed_count == 0:
-                print("⚠️ No rides parsed. Trying one more time in 5 seconds...")
+                print("⚠️ No rides parsed. Trying again in 5 seconds...")
                 time.sleep(5)
                 df, raw_card_count, parsed_count = scraper.run_scraping_cycle()
 
             if df is not None and not df.empty:
-                print(f"📥 Scraped DataFrame ({len(df)} rows):")
-                print(df[["ID", "Pickup", "Dropoff", "Time"]].head(5).to_string(index=False))
-
                 save_to_mongodb(df)
                 remove_old_removed_entries()
-            else:
-                print("⚠️ No data frame created after retry.")
 
-            log_mongo_status("🟢 Sonrası")
+            show_active_chrome_processes("(after scraping)")
 
-            login_attempts = 0
+            # ✅ Scraping ve DB kayıt işlemi bitince manuel temizleme
+            if persistent.cleaner:
+                persistent.cleaner.manual_clean(force_full_clean=False)
+
+            scraper_cycle_counter += 1
+            if scraper_cycle_counter >= 5:
+                print("\n💥 5 scraping sonrası FULL CLEAN yapılıyor...")
+
+                # ✅ Önce tüm Chrome PID'leri öldür
+                if persistent.cleaner:
+                    persistent.cleaner.manual_clean(force_full_clean=True)
+
+                # ✅ Sonra driverı resetle ve yeniden login yap
+                print("♻️ FULL CLEAN sonrası yeni oturum açılıyor...")
+                persistent.reset_session()
+                persistent.ensure_login()
+
+                scraper_cycle_counter = 0
+
             print(f"⏱️ {interval} saniye sonra tekrar çalışacak...")
             time.sleep(interval)
 
@@ -185,12 +195,11 @@ def run_scraper_loop(interval=60):
             persistent.reset_session()
             login_attempts += 1
             if login_attempts >= 3:
-                print("❌ 3 kez üst üste hata alındı. Döngü durduruluyor.")
+                print("❌ 3 kez üst üste hata. Döngü duruyor.")
                 break
             else:
-                print("🔁 Oturum yenileniyor, 30 sn sonra tekrar deneniyor...")
+                print("🔁 30 sn sonra yeni login deneniyor...")
                 time.sleep(30)
-
 
 if __name__ == "__main__":
     run_scraper_loop()
