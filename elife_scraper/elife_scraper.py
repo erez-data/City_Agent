@@ -103,14 +103,19 @@ class ElifeScraper:
 
                     existing = self.collection.find_one({"ID": ride_id})
                     if existing:
-                        update_data = ride_data.copy()
-                        update_data["FirstSeen"] = existing.get("FirstSeen", now)
+                        first_seen = existing.get("FirstSeen", now)
 
-                        age_minutes = (now - update_data["FirstSeen"]).total_seconds() / 60
-                        if existing.get("Status") in ["NEW", "UPDATED"] and age_minutes > 10:
-                            update_data["Status"] = "ACTIVE"
+                        update_data = ride_data.copy()
+                        update_data["FirstSeen"] = first_seen
+
+                        if existing.get("Status") == "REMOVED":
+                            update_data["Status"] = "REACTIVATED"
                         else:
-                            update_data["Status"] = existing.get("Status", "NEW")
+                            age_minutes = (now - first_seen).total_seconds() / 60
+                            if existing.get("Status") in ["NEW", "UPDATED","REACTIVATED"] and age_minutes > 10:
+                                update_data["Status"] = "ACTIVE"
+                            else:
+                                update_data["Status"] = existing.get("Status", "NEW")
 
                         self.collection.update_one({"ID": ride_id}, {"$set": update_data})
                     else:
