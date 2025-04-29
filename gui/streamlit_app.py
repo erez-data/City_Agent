@@ -1,4 +1,4 @@
-# 📦 streamlit_app.py (UPDATED VERSION)
+# 📦 streamlit_app.py (FINAL UPDATED VERSION)
 
 import os
 import sys
@@ -6,6 +6,15 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 from datetime import datetime, timedelta
+
+# 🔧 Utility to convert image to base64
+import base64
+from io import BytesIO
+
+def image_to_base64(img):
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode()
 
 # 📍 PATH Settings
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -22,46 +31,68 @@ else:
     image = Image.open(logo_path)
 
 # 🧡 Streamlit Page Config
-st.set_page_config(page_title="City AI Dashboard", page_icon="🧡", layout="wide")
+st.set_page_config(page_title="City AI Dashboard", page_icon="🚁", layout="wide")
 
+# 🌐 Cyber Theme and Logo Placement
 if image:
-    st.image(image, width=120)
-st.title("🏙️ CITY AI - Management Dashboard")
+    st.markdown("""
+    <div style='display:flex; align-items:center; gap:20px;'>
+        <img src='data:image/png;base64,{0}' width='100'>
+        <h1 style='color:#00ccff; font-family:monospace;'>CITY AGENT - Management Dashboard</h1>
+    </div>
+    """.format(image_to_base64(image)), unsafe_allow_html=True)
 
-# 🎨 Custom Theme
+# 🎨 Cyberpunk Styling
 st.markdown("""
     <style>
     body {
-        background-color: #0f0f0f;
-        color: #e0e0e0;
+        background-color: #0a0a0f;
+        color: #d0d0ff;
     }
     .stTabs [role="tablist"] {
-        background-color: #1a1a1a;
+        background-color: #1a1a2e;
     }
     .stTabs [role="tab"] {
-        color: #e0e0e0;
+        color: #66ccff;
     }
     .stTabs [aria-selected="true"] {
-        background-color: #ff6600;
-        color: white;
+        background-color: #00ccff;
+        color: #000000;
+        font-weight: bold;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 📦 MongoDB Data Loaders
+# 🕒 Date Filter UI
+st.sidebar.markdown("## 🔍 Date Filter")
+start_date = st.sidebar.date_input("Start Date", datetime(2025, 5, 13))
+end_date = st.sidebar.date_input("End Date", datetime(2025, 5, 13))
+start_dt = datetime.combine(start_date, datetime.min.time())
+end_dt = datetime.combine(end_date, datetime.max.time())
+
+# 📦 MongoDB Data Loaders (With Filter)
 def load_match_data():
     collection = get_mongo_collection("match_data")
-    data = list(collection.find({"MatchStatus": "Active"}))
+    data = list(collection.find({
+        "MatchStatus": "Active",
+        "Ride_Time": {"$gte": start_dt, "$lte": end_dt}
+    }))
     return pd.DataFrame(data)
 
 def load_calendar_tasks():
     collection = get_mongo_collection("calendar_tasks")
-    data = list(collection.find({"Status": "ACTIVE"}))
+    data = list(collection.find({
+        "Status": "ACTIVE",
+        "Transfer_Datetime": {"$gte": start_dt, "$lte": end_dt}
+    }))
     return pd.DataFrame(data)
 
 def load_rides_data():
     collection = get_mongo_collection("enriched_rides")
-    data = list(collection.find({"Status": "ACTIVE"}))
+    data = list(collection.find({
+        "Status": "ACTIVE",
+        "Ride_Time": {"$gte": start_dt, "$lte": end_dt}
+    }))
     return pd.DataFrame(data)
 
 def load_system_status():
@@ -107,7 +138,7 @@ def load_system_status():
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🚗 Match Data",
     "🗓️ Calendar Tasks",
-    "🛻 Rides Data",
+    "🚛 Rides Data",
     "📈 System Status",
     "🤖 Ask AI"
 ])
@@ -138,9 +169,9 @@ with tab2:
     else:
         st.warning("No Calendar Tasks Found.")
 
-# 🛻 Rides Data Tab
+# 🚛 Rides Data Tab
 with tab3:
-    st.subheader("🛻 Rides Data")
+    st.subheader("🚛 Rides Data")
     df = load_rides_data()
     if not df.empty:
         st.dataframe(df, use_container_width=True, height=600)
