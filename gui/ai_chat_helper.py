@@ -9,13 +9,30 @@ from test_deepseek1 import ask_deepseek
 from datetime import datetime
 
 # ----------------------------
-# 🧠 Collection Loader with Filters
+# 🧠 Collection Loader with Date Filters
 # ----------------------------
-def load_filtered_data(collection_name):
+def load_filtered_data(collection_name, start_dt, end_dt):
+    if not collection_name:
+        return []  # 🛡️ No collection selected, no data
+
     collection = get_mongo_collection(collection_name)
+    query = {}
 
     if collection_name == "match_data":
-        query = {"MatchStatus": "Active"}
+        query = {
+            "MatchStatus": "Active",
+            "Ride_Time": {"$gte": start_dt, "$lte": end_dt}
+        }
+    elif collection_name == "calendar_tasks":
+        query = {
+            "Status": "ACTIVE",
+            "Transfer_Datetime": {"$gte": start_dt, "$lte": end_dt}
+        }
+    elif collection_name in ["wt_rides", "elife_rides", "enriched_rides"]:
+        query = {
+            "Status": "ACTIVE",
+            "ride_datetime": {"$gte": start_dt, "$lte": end_dt}
+        }
     else:
         query = {"Status": "ACTIVE"}
 
@@ -32,7 +49,7 @@ def summarize_documents(docs, collection_name):
         if collection_name == "match_data":
             summary = f"Pickup: {doc.get('Pickup', '')} ➔ Dropoff: {doc.get('Dropoff', '')}, Ride_Time: {doc.get('Ride_Time', '')}, Match_Time: {doc.get('Match_Time', '')}, Time Diff (min): {doc.get('Time_Difference_min', '')}, Distance (km): {doc.get('Real_Distance_km', '')}, Direction: {doc.get('Match_Direction', '')}"
         else:
-            summary = f"Pickup: {doc.get('Pickup', '')} ➔ Dropoff: {doc.get('Dropoff', '')}, Transfer Time: {doc.get('Transfer_Datetime', doc.get('ride_datetime', ''))}, Distance: {doc.get('Distance', ''),}, Duration: {doc.get('Duration', '')}, Notes: {doc.get('Notes', '')}, Price: {doc.get('Price', '')}"
+            summary = f"Pickup: {doc.get('Pickup', '')} ➔ Dropoff: {doc.get('Dropoff', '')}, Transfer Time: {doc.get('Transfer_Datetime', doc.get('ride_datetime', ''))}, Distance: {doc.get('Distance', '')}, Duration: {doc.get('Duration', '')}, Notes: {doc.get('Notes', '')}, Price: {doc.get('Price', '')}"
         summaries.append(summary)
 
     return "\n".join(summaries)
@@ -40,13 +57,14 @@ def summarize_documents(docs, collection_name):
 # ----------------------------
 # 🧠 Smart Prompt Builder
 # ----------------------------
-
 def build_prompt(history, user_message, mongo_summary=None):
     today_date = datetime.now().strftime("%Y-%m-%d")
     prompt = f"You are answering based on business ride data. (Today is {today_date})\n"
 
     if mongo_summary:
         prompt += f"Here is some reference data:\n{mongo_summary}\n"
+    else:
+        prompt += f"No database records were selected. Answer generally.\n"
 
     if history:
         prompt += "\nPrevious conversation:\n"
@@ -60,9 +78,8 @@ def build_prompt(history, user_message, mongo_summary=None):
     return prompt
 
 # ----------------------------
-# 🧠 Call Phi-2 Ollama Model API
+# 🧠 Call DeepSeek AI Model API
 # ----------------------------
-
 def call_ai(prompt):
     result = ask_deepseek(prompt)
     try:
@@ -74,7 +91,6 @@ def call_ai(prompt):
 # ----------------------------
 # 🧠 Traffic Light Status
 # ----------------------------
-
 def show_traffic_light(collection_selected, mongo_docs):
     if not collection_selected:
         st.markdown("### 🟡 General Question (no collection selected)")
@@ -86,8 +102,7 @@ def show_traffic_light(collection_selected, mongo_docs):
 # ----------------------------
 # 🧠 Full Tab UI Builder
 # ----------------------------
-
-def build_ask_ai_tab():
+def build_ask_ai_tab(start_dt, end_dt):
     st.header("🤖 Ask AI About Your Business Data")
 
     # Session State Setup
@@ -101,7 +116,7 @@ def build_ask_ai_tab():
     mongo_summary = None
 
     if collection_selected:
-        mongo_docs = load_filtered_data(collection_selected)
+        mongo_docs = load_filtered_data(collection_selected, start_dt, end_dt)
         if mongo_docs:
             mongo_summary = summarize_documents(mongo_docs, collection_selected)
 
@@ -137,4 +152,3 @@ def build_ask_ai_tab():
 
         # Refresh to show
         st.rerun()
-

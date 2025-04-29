@@ -1,4 +1,4 @@
-# 📦 streamlit_app.py (FINAL UPDATED VERSION)
+# 📦 streamlit_app.py (FINAL CLEAN VERSION)
 
 import os
 import sys
@@ -91,7 +91,7 @@ def load_rides_data():
     collection = get_mongo_collection("enriched_rides")
     data = list(collection.find({
         "Status": "ACTIVE",
-        "Ride_Time": {"$gte": start_dt, "$lte": end_dt}
+        "ride_datetime": {"$gte": start_dt, "$lte": end_dt}
     }))
     return pd.DataFrame(data)
 
@@ -189,4 +189,4 @@ with tab4:
 
 # 🤖 Ask AI Tab (New)
 with tab5:
-    build_ask_ai_tab()  # 🚀 Call the new AI tab builder
+    build_ask_ai_tab(start_dt, end_dt)  # 🚀 Call the new AI tab builder with dates passed
