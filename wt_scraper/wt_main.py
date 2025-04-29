@@ -80,7 +80,15 @@ def save_to_mongodb(df):
 
             if existing:
                 if existing.get("Status") == "REMOVED":
-                    row_dict.update({"FirstSeen": now, "LastSeen": now, "Status": "NEW", "Source": "wt"})
+                    # 🚫 FirstSeen asla değişmiyor!
+                    first_seen = existing.get("FirstSeen", now)
+
+                    row_dict.update({
+                        "FirstSeen": first_seen,
+                        "LastSeen": now,
+                        "Status": "REACTIVATED",  # veya "ACTIVE" olarak
+                        "Source": "wt"
+                    })
                     collection.update_one({"ID": ride_id}, {"$set": row_dict})
                     reactivated_count += 1
                     continue
@@ -100,7 +108,7 @@ def save_to_mongodb(df):
                 if isinstance(first_seen, str):
                     first_seen = datetime.fromisoformat(first_seen)
                 age_minutes = (now - first_seen).total_seconds() / 60
-                if existing.get("Status") in ["NEW", "UPDATED"] and age_minutes > 10:
+                if existing.get("Status") in ["NEW", "UPDATED","REACTIVATED"] and age_minutes > 10:
                     updates["Status"] = "ACTIVE"
                 collection.update_one({"ID": ride_id}, {"$set": updates})
                 updated_count += 1

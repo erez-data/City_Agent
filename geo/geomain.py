@@ -52,8 +52,8 @@ class MainGeoProcessor:
         return pd.DataFrame(docs) if docs else pd.DataFrame()
 
     def update_enriched_rides(self):
-        elife_df = self.fetch_dataframe_from_mongo(get_mongo_collection("elife_rides"), {"Status": {"$ne": "REMOVED"}})
-        wt_df = self.fetch_dataframe_from_mongo(get_mongo_collection("wt_rides"), {"Status": {"$ne": "REMOVED"}})
+        elife_df = self.fetch_dataframe_from_mongo(get_mongo_collection("elife_rides"), {})
+        wt_df = self.fetch_dataframe_from_mongo(get_mongo_collection("wt_rides"), {})
 
         enriched_df = pd.concat([elife_df, wt_df], ignore_index=True)
         enriched_df = enriched_df.dropna(subset=["ID"])
