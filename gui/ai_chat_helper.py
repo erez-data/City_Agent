@@ -63,18 +63,19 @@ def call_phi2(prompt):
     response = requests.post("http://ollama:11434/api/generate", json={
         "model": "phi",
         "prompt": prompt
-    }, timeout=360)
+    }, timeout=120)
 
     result = ""
     for chunk in response.iter_lines():
         if chunk:
             data = chunk.decode('utf-8')
-            if 'response' in data:
-                try:
-                    text = eval(data).get('response', '')
-                    result += text
-                except:
-                    continue
+            try:
+                parsed = json.loads(data)  # ✅ JSON parse
+                text = parsed.get('response', '')
+                result += text
+            except Exception as e:
+                print("PARSE ERROR:", e)
+                continue
     return result
 
 # ----------------------------
