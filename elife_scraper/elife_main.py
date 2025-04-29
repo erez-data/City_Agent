@@ -79,7 +79,7 @@ def remove_old_removed_entries():
 def log_mongo_status(label):
     summary = get_mongo_status_summary()
     print(f"\n📊 MongoDB Durumu ({label}):")
-    for key in ["NEW", "ACTIVE", "UPDATED", "REMOVED"]:
+    for key in ["NEW", "ACTIVE", "UPDATED", "REMOVED", "REACTIVATED"]:
         print(f"  - {key}: {summary.get(key, 0)}")
 
 def show_active_chrome_processes(context=""):
