@@ -138,4 +138,4 @@ def build_ask_ai_tab():
         st.session_state.messages.append({"role": "assistant", "content": ai_response})
 
         # Refresh to show
-        st.experimental_rerun()
+        st.rerun()
