@@ -69,15 +69,33 @@ services:
       - ./utils:/app/utils:ro
     restart: always
 
-  # 🆕 [ADDED] Dashboard Service for Streamlit App
+  # 🆕 [ADDED] Ollama Service (Phi-2 AI Model)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    restart: always
+    networks:
+      - cityagent-network
+
+  # 🆕 [UPDATED] Dashboard Service (Streamlit App)
   dashboard:
     build:
       context: ./gui
-      dockerfile: Dockerfile  # Ana proje dizinindeki Dockerfile kullanılıyor
+      dockerfile: Dockerfile
     image: cityagent-dashboard:latest
     env_file: .env
     volumes:
       - ./utils:/app/utils:ro
     ports:
-      - "8501:8501"  # Streamlit için dışa açılan port
+      - "8501:8501"
+    depends_on:
+      - ollama
     restart: always
+    networks:
+      - cityagent-network
+
+# 🆕 [ADDED] Custom Network
+networks:
+  cityagent-network:
+    driver: bridge

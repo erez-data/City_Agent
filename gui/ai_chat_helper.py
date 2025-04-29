@@ -60,10 +60,10 @@ def build_prompt(history, user_message, mongo_summary=None):
 # ----------------------------
 
 def call_phi2(prompt):
-    response = requests.post("http://78.135.87.26:11434/api/generate", json={
+    response = requests.post("http://ollama:11434/api/generate", json={
         "model": "phi",
         "prompt": prompt
-    }, timeout=120)
+    }, timeout=360)
 
     result = ""
     for chunk in response.iter_lines():
