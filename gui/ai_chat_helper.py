@@ -6,6 +6,7 @@ import pandas as pd
 from utils.mongodb_utils import get_mongo_collection
 import json
 from test_deepseek1 import ask_deepseek
+from datetime import datetime
 
 # ----------------------------
 # 🧠 Collection Loader with Filters
@@ -31,7 +32,7 @@ def summarize_documents(docs, collection_name):
         if collection_name == "match_data":
             summary = f"Pickup: {doc.get('Pickup', '')} ➔ Dropoff: {doc.get('Dropoff', '')}, Ride_Time: {doc.get('Ride_Time', '')}, Match_Time: {doc.get('Match_Time', '')}, Time Diff (min): {doc.get('Time_Difference_min', '')}, Distance (km): {doc.get('Real_Distance_km', '')}, Direction: {doc.get('Match_Direction', '')}"
         else:
-            summary = f"Pickup: {doc.get('Pickup', '')} ➔ Dropoff: {doc.get('Dropoff', '')}, Transfer Time: {doc.get('Transfer_Datetime', doc.get('ride_datetime', ''))}, Distance: {doc.get('Distance', '')}, Duration: {doc.get('Duration', '')}"
+            summary = f"Pickup: {doc.get('Pickup', '')} ➔ Dropoff: {doc.get('Dropoff', '')}, Transfer Time: {doc.get('Transfer_Datetime', doc.get('ride_datetime', ''))}, Distance: {doc.get('Distance', ''),}, Duration: {doc.get('Duration', '')}, Notes: {doc.get('Notes', '')}, Price: {doc.get('Price', '')}"
         summaries.append(summary)
 
     return "\n".join(summaries)
@@ -41,7 +42,8 @@ def summarize_documents(docs, collection_name):
 # ----------------------------
 
 def build_prompt(history, user_message, mongo_summary=None):
-    prompt = "You are answering based on business ride data.\n"
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    prompt = f"You are answering based on business ride data. (Today is {today_date})\n"
 
     if mongo_summary:
         prompt += f"Here is some reference data:\n{mongo_summary}\n"
@@ -108,9 +110,13 @@ def build_ask_ai_tab():
 
     # Show existing chat messages
     for message in st.session_state.messages:
-        role_color = "#ADD8E6" if message['role'] == 'user' else "#90EE90"
+        role_color = "#1e1e1e" if message['role'] == 'user' else "#2e2e2e"
         with st.chat_message(message['role']):
-            st.markdown(f"<div style='background-color:{role_color}; padding:10px; border-radius:10px'>{message['content']}</div>", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div style='background-color:{role_color}; padding:12px; border-radius:10px; color:white; font-size:16px;'>
+                    {message['content']}
+                </div>
+            """, unsafe_allow_html=True)
 
     # User Input
     prompt = st.chat_input("Type your question here...")
