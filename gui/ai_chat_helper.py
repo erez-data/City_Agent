@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 from utils.mongodb_utils import get_mongo_collection
 import json
+from test_deepseek1 import ask_deepseek
 
 # ----------------------------
 # 🧠 Collection Loader with Filters
@@ -60,23 +61,13 @@ def build_prompt(history, user_message, mongo_summary=None):
 # 🧠 Call Phi-2 Ollama Model API
 # ----------------------------
 
-def call_phi2(prompt):
-    response = requests.post("http://ollama:11434/api/generate", json={
-        "model": "phi",
-        "prompt": prompt
-    }, timeout=120, stream=True)  # <--- Çok önemli: stream=True
-
-    result = ""
-    for line in response.iter_lines(decode_unicode=True):
-        if line:
-            try:
-                parsed = json.loads(line)
-                part = parsed.get("response", "")
-                result += part
-            except Exception as e:
-                print("Parse error:", e)
-                continue
-    return result.strip()
+def call_ai(prompt):
+    result = ask_deepseek(prompt)
+    try:
+        return result["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        print("DeepSeek parsing error:", e)
+        return "⚠️ Yanıt işlenemedi."
 
 # ----------------------------
 # 🧠 Traffic Light Status
@@ -133,10 +124,11 @@ def build_ask_ai_tab():
 
         # Call AI
         with st.spinner("Thinking..."):
-            ai_response = call_phi2(full_prompt)
+            ai_response = call_ai(full_prompt)
 
         # Add AI response to history
         st.session_state.messages.append({"role": "assistant", "content": ai_response})
 
         # Refresh to show
         st.rerun()
+
