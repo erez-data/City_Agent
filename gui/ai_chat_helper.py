@@ -4,6 +4,7 @@ import streamlit as st
 import requests
 import pandas as pd
 from utils.mongodb_utils import get_mongo_collection
+import json
 
 # ----------------------------
 # 🧠 Collection Loader with Filters
@@ -63,20 +64,19 @@ def call_phi2(prompt):
     response = requests.post("http://ollama:11434/api/generate", json={
         "model": "phi",
         "prompt": prompt
-    }, timeout=120)
+    }, timeout=120, stream=True)  # <--- Çok önemli: stream=True
 
     result = ""
-    for chunk in response.iter_lines():
-        if chunk:
-            data = chunk.decode('utf-8')
+    for line in response.iter_lines(decode_unicode=True):
+        if line:
             try:
-                parsed = json.loads(data)  # ✅ JSON parse
-                text = parsed.get('response', '')
-                result += text
+                parsed = json.loads(line)
+                part = parsed.get("response", "")
+                result += part
             except Exception as e:
-                print("PARSE ERROR:", e)
+                print("Parse error:", e)
                 continue
-    return result
+    return result.strip()
 
 # ----------------------------
 # 🧠 Traffic Light Status
