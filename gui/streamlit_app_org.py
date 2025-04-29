@@ -1,5 +1,3 @@
-# 📦 streamlit_app.py (UPDATED VERSION)
-
 import os
 import sys
 import pandas as pd
@@ -7,28 +5,32 @@ import streamlit as st
 from PIL import Image
 from datetime import datetime, timedelta
 
-# 📍 PATH Settings
+# 📍 PATH AYARLAMASI
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.mongodb_utils import get_mongo_collection
-from ai_chat_helper import build_ask_ai_tab  # 🚀 Importing new AI module
 
-# 📸 LOGO Settings
+# 📸 LOGO DOSYASI PATH - Düzeltilmiş versiyon
 logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
+# Logo dosyasının varlığını kontrol et
 if not os.path.exists(logo_path):
     st.warning(f"Logo file not found at: {logo_path}")
     image = None
 else:
     image = Image.open(logo_path)
 
-# 🧡 Streamlit Page Config
+# 🧡 Streamlit sayfa ayarları
 st.set_page_config(page_title="City AI Dashboard", page_icon="🧡", layout="wide")
 
+# 🏙️ Logo ve Başlık (sadece logo varsa göster)
 if image:
     st.image(image, width=120)
 st.title("🏙️ CITY AI - Management Dashboard")
 
-# 🎨 Custom Theme
+# ... (diğer kodlar aynı şekilde devam eder) ...
+
+
+# 🎨 Custom CSS (Railway tarzı koyu renk tema)
 st.markdown("""
     <style>
     body {
@@ -48,20 +50,24 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 📦 MongoDB Data Loaders
+# 🏙️ Logo ve Başlık
+st.image(logo_path, width=120)
+st.title("🏙️ CITY AI - Management Dashboard")
+
+# 📦 MongoDB veri çekme fonksiyonları
 def load_match_data():
     collection = get_mongo_collection("match_data")
-    data = list(collection.find({"MatchStatus": "Active"}))
+    data = list(collection.find())
     return pd.DataFrame(data)
 
 def load_calendar_tasks():
     collection = get_mongo_collection("calendar_tasks")
-    data = list(collection.find({"Status": "ACTIVE"}))
+    data = list(collection.find())
     return pd.DataFrame(data)
 
 def load_rides_data():
     collection = get_mongo_collection("enriched_rides")
-    data = list(collection.find({"Status": "ACTIVE"}))
+    data = list(collection.find())
     return pd.DataFrame(data)
 
 def load_system_status():
@@ -103,13 +109,12 @@ def load_system_status():
 
     return pd.DataFrame(status_data)
 
-# 🗂️ Tabs Structure
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+# 🗂️ 4 sekmeli yapı
+tab1, tab2, tab3, tab4 = st.tabs([
     "🚗 Match Data",
     "🗓️ Calendar Tasks",
     "🛻 Rides Data",
-    "📈 System Status",
-    "🤖 Ask AI"
+    "📈 System Status"
 ])
 
 # 🚗 Match Data Tab
@@ -125,7 +130,7 @@ with tab1:
             "DoubleUtilized", "MatchStatus", "CalendarMatchPair"
         ]
         df_display = df[selected_cols]
-        st.dataframe(df_display, use_container_width=True, height=600)
+        st.dataframe(df_display)
     else:
         st.warning("No Match Data Found.")
 
@@ -134,7 +139,7 @@ with tab2:
     st.subheader("🗓️ Calendar Tasks")
     df = load_calendar_tasks()
     if not df.empty:
-        st.dataframe(df, use_container_width=True, height=600)
+        st.dataframe(df)
     else:
         st.warning("No Calendar Tasks Found.")
 
@@ -143,7 +148,7 @@ with tab3:
     st.subheader("🛻 Rides Data")
     df = load_rides_data()
     if not df.empty:
-        st.dataframe(df, use_container_width=True, height=600)
+        st.dataframe(df)
     else:
         st.warning("No Rides Data Found.")
 
@@ -152,10 +157,6 @@ with tab4:
     st.subheader("📈 System Status Overview")
     status_df = load_system_status()
     if not status_df.empty:
-        st.dataframe(status_df, use_container_width=True, height=600)
+        st.dataframe(status_df)
     else:
         st.warning("No System Status Available.")
-
-# 🤖 Ask AI Tab (New)
-with tab5:
-    build_ask_ai_tab()  # 🚀 Call the new AI tab builder
