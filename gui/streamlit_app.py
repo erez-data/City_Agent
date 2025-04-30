@@ -120,7 +120,7 @@ def load_system_status():
         count = len(docs)
 
         if last_update:
-            delta = now - last_update
+            delta = now() - last_update
             color = "🟩" if delta <= timedelta(hours=1) else "🟨"
         else:
             color = "❓"
@@ -129,6 +129,7 @@ def load_system_status():
             "Collection": name,
             "Document Count": count,
             "Last Update": last_update.strftime('%Y-%m-%d %H:%M:%S') if last_update else "Unknown",
+            "Now": now.strftime('%Y-%m-%d %H:%M:%S'),
             "Status": color
         })
 
