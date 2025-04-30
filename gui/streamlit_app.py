@@ -120,7 +120,7 @@ def load_system_status():
         count = len(docs)
 
         if last_update:
-            delta = now() - last_update
+            delta = now - last_update
             color = "🟩" if delta <= timedelta(hours=1) else "🟨"
         else:
             color = "❓"
