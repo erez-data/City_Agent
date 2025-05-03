@@ -6,6 +6,27 @@ import logging
 from functools import lru_cache
 from utils.mongodb_utils import get_mongo_collection  # 🆕 MongoDB bağlantı için
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# .env dosyasını yükle (ana dizinden)
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+
+# Lokasyon adı (Dalaman, Antalya, vb.)
+CLIENT_BASE = os.getenv("CLIENT_BASE", "Lokasyon Bulunamadı")
+
+# Kriter dosyasını oku
+def load_analysis_criteria():
+    path = os.getenv("ANALYSIS_CRITERIA_FILE")
+    if path:
+        base_dir = os.path.dirname(__file__)  # analyzer klasörü
+        full_path = os.path.join(base_dir, "..", path) if not os.path.isabs(path) else path
+        if os.path.exists(full_path):
+            with open(full_path, encoding="utf-8") as f:
+                return f.read()
+    return "❌ Analiz kriterleri bulunamadı."
+
+ANALYSIS_CRITERIA = load_analysis_criteria()
 
 class MongoDBLogHandler(logging.Handler):
     def __init__(self):
@@ -112,7 +133,7 @@ class RideAnalyzer:
 
         prompt = f"""
         🔧 SENARYO:
-        Sen, Dalaman merkezli bir VIP transfer şirketinin operasyon yöneticisisin. Pickup lokasyonumuz Dalaman, araçlarımız Dalaman lokasyonundan çıkış yapmaktadır.
+        Sen, {CLIENT_BASE} merkezli bir VIP transfer şirketinin operasyon yöneticisisin. Pickup lokasyonumuz {CLIENT_BASE}, araçlarımız {CLIENT_BASE} lokasyonundan çıkış yapmaktadır.
         Aracın boş dönme ihtimalini minimize etmek ana hedefimiz. Artık otomatik eşleşme sistemimiz var ve size detaylı eşleşme bilgileri sunuyoruz.
 
         🚗 YENİ TRANSFER DETAYLARI:
@@ -128,16 +149,7 @@ class RideAnalyzer:
         {self._format_matches(matches) if matches else "⚠️ Hiç eşleşme bulunamadı - araç boş dönecek"}
 
         🎯 ANALİZ KRİTERLERİ:
-        1. Yakıt Maliyeti: 1 lt = 45 TL, 100 km = 7 lt, gidiş-dönüş hesapla.
-        2. Sürücü Ücreti: Günlük 1000 TL → ortalama parça başı 250 TL.
-        3. Tünel ve Otopark: Göcek-Fethiye-Antalya yönüne tünel 120 TL tek yön, Dalaman havaalanı otoparkı 140 TL.
-        4. Kârlılık Puanı (1-5): Ücret, mesafe, maliyetler ve eşleşme kalitesini göz önünde bulundur.
-        5. Eşleşme Kalitesi: Home Return > Away Return > Unknown sıralamasına göre değerlendir.
-        6. Çift Kullanım: Eğer DoubleUtilized=True ise aracın verimli kullanıldığını belirt.
-        7. Hava Durumu: Ufacık bir bilgi ver. ☁️🌞
-        8. Espirili ol, ama %5 dozunda. 😄
-        9. Çift Kayıt Uyarısı: Eğer CalendarMatchPair doluysa, bu eşleşmenin başka bir rezervasyonla çakıştığını ve dikkatle değerlendirilmesi gerektiğini belirt.
-
+        {ANALYSIS_CRITERIA}
         🎯 CEVAP FORMATI:
         **{emoji} {source_label.capitalize()} VIP Transfer Analizi** ✈️🚗
         - 📍 Rota: {ride['Pickup']} → {ride['Dropoff']} ({ride['Distance']} ~ {ride['Duration']})
@@ -157,8 +169,6 @@ class RideAnalyzer:
         📊 Analiz Güveni: [X%] ([Brief confidence explanation])
 
         💡 Öneriler: [1-3 suggestions]
-        🌈 Neşeli Kapanış: [Short fun comment]
-
         💡 Tüm yanıtı Türkçe yaz. Maksimum 1250 karakteri geçmesin.
         """
 
