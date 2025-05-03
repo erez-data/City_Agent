@@ -17,7 +17,7 @@ class ElifeAutoLogin:
         self.password = os.getenv("ELIFE_PASSWORD")
 
         if not self.username or not self.password:
-            raise ValueError("❌ ELIFE_USERNAME veya ELIFE_PASSWORD .env dosyasında tanımlı değil!")
+            raise ValueError("❌ ELIFE_USERNAME veya ELIFE_PASSWORD .env.client_city dosyasında tanımlı değil!")
 
         options = uc.ChromeOptions()
         options.add_argument("--lang=tr-TR")

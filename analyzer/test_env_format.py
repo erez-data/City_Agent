@@ -1,10 +1,10 @@
 import os
 from dotenv import load_dotenv
 
-# .env dosyasını yükle
-load_dotenv(dotenv_path="../.env")
+# .env.client_city dosyasını yükle
+load_dotenv(dotenv_path="../.env.client_city")
 
-# CLIENT_BASE doğrudan .env içinde
+# CLIENT_BASE doğrudan .env.client_city içinde
 client_base = os.getenv("CLIENT_BASE", "BULUNAMADI")
 
 # ANALYSIS_CRITERIA_FILE varsa dosyadan oku, yoksa ANALYSIS_CRITERIA string'ini al

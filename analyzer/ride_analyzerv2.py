@@ -9,8 +9,8 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
-# .env dosyasını yükle (ana dizinden)
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+# .env.client_city dosyasını yükle (ana dizinden)
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env.client_city"))
 
 # Lokasyon adı (Dalaman, Antalya, vb.)
 CLIENT_BASE = os.getenv("CLIENT_BASE", "Lokasyon Bulunamadı")

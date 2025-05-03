@@ -12,7 +12,7 @@ services:
     image: cityagent-elife-scraper:latest
     depends_on:
       - scraper-base
-    env_file: .env
+    env_file: .env.client_city
     volumes:
       - ./utils:/app/utils:ro
     restart: always
@@ -24,7 +24,7 @@ services:
     image: cityagent-wt-scraper:latest
     depends_on:
       - scraper-base
-    env_file: .env
+    env_file: .env.client_city
     volumes:
       - ./utils:/app/utils:ro
     restart: always
@@ -34,7 +34,7 @@ services:
       context: ./analyzer
       dockerfile: Dockerfile
     image: cityagent-analyzer:latest
-    env_file: .env
+    env_file: .env.client_city
     volumes:
       - ./utils:/app/utils:ro
     restart: always
@@ -44,7 +44,7 @@ services:
       context: ./calendar_scraper
       dockerfile: Dockerfile
     image: cityagent-calendar-scraper:latest
-    env_file: .env
+    env_file: .env.client_city
     volumes:
       - ./utils:/app/utils:ro
     restart: always
@@ -54,7 +54,7 @@ services:
       context: ./geo
       dockerfile: Dockerfile
     image: cityagent-geo:latest
-    env_file: .env
+    env_file: .env.client_city
     volumes:
       - ./utils:/app/utils:ro
     restart: always
@@ -64,7 +64,7 @@ services:
       context: ./match
       dockerfile: Dockerfile
     image: cityagent-match:latest
-    env_file: .env
+    env_file: .env.client_city
     volumes:
       - ./utils:/app/utils:ro
     restart: always
@@ -75,7 +75,7 @@ services:
       context: ./gui
       dockerfile: Dockerfile
     image: cityagent-dashboard:latest
-    env_file: .env
+    env_file: .env.client_city
     volumes:
       - ./utils:/app/utils:ro
     ports:

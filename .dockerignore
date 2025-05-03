@@ -1,5 +1,5 @@
 __pycache__/
 *.pyc
-.env
+.env.client_city
 .env.*
 screenshots/

@@ -18,7 +18,7 @@ class WTAutoLogin:
         self.password = os.getenv("WT_PASSWORD")
 
         if not all([self.gtu, self.email, self.password]):
-            raise ValueError("❌ .env file missing WT_GTU, WT_EMAIL or WT_PASSWORD")
+            raise ValueError("❌ .env.client_city file missing WT_GTU, WT_EMAIL or WT_PASSWORD")
 
         options = uc.ChromeOptions()
         # ✅ Zorunlu dil ayarı

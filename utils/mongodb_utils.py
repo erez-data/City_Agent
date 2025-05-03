@@ -2,7 +2,7 @@ import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
-load_dotenv()  # .env dosyasını yükle
+load_dotenv()  # .env.client_city dosyasını yükle
 
 def get_mongo_collection(collection_name):
     uri = os.getenv("MONGO_URI")
