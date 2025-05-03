@@ -3,3 +3,4 @@ __pycache__/
 .env.client_city
 .env.*
 screenshots/
+.env.client_usetravel
