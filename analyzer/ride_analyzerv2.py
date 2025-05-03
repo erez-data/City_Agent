@@ -9,22 +9,31 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
-# .env.client_city dosyasını yükle (ana dizinden)
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env.client_city"))
+load_dotenv()  # .env.client_city dosyasını yükle
 
-# Lokasyon adı (Dalaman, Antalya, vb.)
-CLIENT_BASE = os.getenv("CLIENT_BASE", "Lokasyon Bulunamadı")
+# Enable debug logging temporarily
+logging.basicConfig(level=logging.INFO)
 
-# Kriter dosyasını oku
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_BASE = os.getenv("CLIENT_BASE")
+ANALYSIS_CRITERIA_FILE = os.getenv("ANALYSIS_CRITERIA_FILE")
+
+# Log environment variables for testing
+logging.info(f"✅ ENV loaded — CLIENT_ID: {CLIENT_ID}")
+logging.info(f"✅ ENV loaded — CLIENT_BASE: {CLIENT_BASE}")
+logging.info(f"✅ ENV loaded — ANALYSIS_CRITERIA_FILE: {ANALYSIS_CRITERIA_FILE}")
+
 def load_analysis_criteria():
     path = os.getenv("ANALYSIS_CRITERIA_FILE")
     if path:
-        base_dir = os.path.dirname(__file__)  # analyzer klasörü
-        full_path = os.path.join(base_dir, "..", path) if not os.path.isabs(path) else path
+        base_dir = os.path.dirname(__file__)  # = analyzer/
+        full_path = os.path.join(base_dir, path) if not os.path.isabs(path) else path
+        logging.info(f"🔍 Full prompt path resolved to: {full_path}")
         if os.path.exists(full_path):
             with open(full_path, encoding="utf-8") as f:
                 return f.read()
     return "❌ Analiz kriterleri bulunamadı."
+
 
 ANALYSIS_CRITERIA = load_analysis_criteria()
 
@@ -207,9 +216,14 @@ class RideAnalyzer:
             matches = self.filter_matches_for_ride(ride['ID'])
 
             prompt = self.create_ride_prompt(ride, matches)
+
+            # 🔍 PROMPT LOG
+            logging.info(f"🧠 [Ride Prompt for ID={ride['ID']}]:\n{prompt}")
+
             response = ask_deepseek(prompt)
 
             analysis = response.get('choices', [{}])[0].get('message', {}).get('content')
+            logging.info(f"📨 [Deepseek Yanıt for ID={ride['ID']}]:\n{analysis}")
             if not analysis:
                 raise ValueError("Empty analysis response from Deepseek")
 
