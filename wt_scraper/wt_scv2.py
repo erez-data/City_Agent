@@ -54,7 +54,7 @@ class WTScraperZoomScroll:
                 EC.element_to_be_clickable((By.XPATH, "//ion-item[@routerlink='/booking-master']"))
             )
             self.driver.execute_script("arguments[0].click();", booking_button)
-            time.sleep(4)
+            time.sleep(11)
 
             print("🧩 Sending 25 TABs to focus booking list...")
             for _ in range(30):
@@ -63,7 +63,7 @@ class WTScraperZoomScroll:
         except Exception as e:
             print(f"[WARN] Tab switching failed: {e}")
 
-    def scroll_to_bottom(self, max_scrolls=200):
+    def scroll_to_bottom(self, max_scrolls=250):
         print("⬇️ Scrolling to bottom using ARROW_DOWN...")
         for i in range(max_scrolls):
             ActionChains(self.driver).send_keys(Keys.ARROW_DOWN).perform()

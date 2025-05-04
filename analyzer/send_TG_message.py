@@ -13,7 +13,7 @@ ENABLE_TELEGRAM = os.getenv("ENABLE_TELEGRAM", "false").lower() == "true"
 
 def send_telegram_message_with_metadata(message):
     if not ENABLE_TELEGRAM:
-        print("🚫 Telegram disabled via .env.client_city (ENABLE_TELEGRAM=false)")
+        print("🚫 Telegram disabled via .env.client_usetravel.client_city (ENABLE_TELEGRAM=false)")
         return {
             "telegram_sent": False,
             "analysis": message

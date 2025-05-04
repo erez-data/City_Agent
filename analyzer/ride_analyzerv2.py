@@ -9,7 +9,7 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # .env.client_city dosyasını yükle
+load_dotenv()  # .env.client_usetravel.client_city dosyasını yükle
 
 # Enable debug logging temporarily
 logging.basicConfig(level=logging.INFO)
