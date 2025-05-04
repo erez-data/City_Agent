@@ -48,10 +48,10 @@ class WTScraperZoomScroll:
                 EC.element_to_be_clickable((By.XPATH, "//ion-item[@routerlink='/booking-master']"))
             )
             booking_button.click()
-            time.sleep(6)
+            time.sleep(12)
 
             print("🧩 Sending 25 TABs to focus booking list...")
-            for _ in range(30):
+            for _ in range(40):
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
                 time.sleep(0.1)
         except Exception as e:
