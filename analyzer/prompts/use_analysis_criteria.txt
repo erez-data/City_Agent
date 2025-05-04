@@ -1,8 +1,8 @@
-        1. Yakıt Maliyeti: 1 lt = 45 TL, 100 km = 7 lt, gidiş-dönüş hesapla.
-        2. Sürücü Ücreti: Günlük 1000 TL → ortalama parça başı 250 TL.
-        3. Tünel ve Otopark: Göcek-Fethiye-Antalya yönüne tünel 120 TL tek yön, Dalaman havaalanı otoparkı 140 TL.
+        1. Yakıt Maliyeti: 1 lt = 48 TL, 100 km = 8 lt, gidiş-dönüş hesapla.
+        2. Sürücü Ücreti: Günlük 1500 TL → ortalama parça başı 375 TL.
+        3. Tünel ve Otopark: Antalya havaalanı otoparkı 120 TL.
         4. Kârlılık Puanı (1-5): Ücret, mesafe, maliyetler ve eşleşme kalitesini göz önünde bulundur.
         5. Eşleşme Kalitesi: Home Return > Away Return > Unknown sıralamasına göre değerlendir.
         6. Çift Kullanım: Eğer DoubleUtilized=True ise aracın verimli kullanıldığını belirt.
-        7. Hava Durumu: Ufacık bir bilgi ver. ☁️🌞
-        8. Çift Kayıt Uyarısı: Eğer CalendarMatchPair doluysa, bu eşleşmenin başka bir rezervasyonla çakıştığını ve dikkatle değerlendirilmesi gerektiğini belirt.
+        7. Hava Durumu: Ufacık bir bilgi ver. ☁🌞
+        8. Araç kira ücreti parça başı 500 TL olarak maliyet hesapla, Araçlar başka filolardan kiralanmakta.
