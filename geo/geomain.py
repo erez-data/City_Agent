@@ -5,6 +5,15 @@ from datetime import datetime
 import time
 import pandas as pd
 
+import os
+
+def is_allowed_region(pickup, dropoff, allowed_regions):
+    for region in allowed_regions:
+        if region.lower() in (pickup or "").lower() or region.lower() in (dropoff or "").lower():
+            return True
+    return False
+
+
 class MainGeoProcessor:
     def __init__(self):
         self.geo = MongoGeoCoder()
@@ -57,6 +66,28 @@ class MainGeoProcessor:
 
         enriched_df = pd.concat([elife_df, wt_df], ignore_index=True)
         enriched_df = enriched_df.dropna(subset=["ID"])
+
+        client_name = os.getenv("CLIENT_ID")
+        client_config = get_mongo_collection("clients").find_one({"client_name": client_name})
+
+        # Apply region filter if enabled
+        if client_config and client_config.get("filter", False):
+            allowed_regions = client_config.get("filter_regions", [])
+            before_count = len(enriched_df)
+
+            enriched_df = enriched_df[
+                enriched_df.apply(
+                    lambda row: is_allowed_region(row.get("Pickup", ""), row.get("Dropoff", ""), allowed_regions),
+                    axis=1
+                )
+            ]
+
+            after_count = len(enriched_df)
+            self.log_event("info", f"🚧 Region filter applied: {before_count - after_count} rides excluded", {
+                "total_before": before_count,
+                "total_after": after_count,
+                "allowed_regions": allowed_regions
+            })
 
         new_df = enriched_df.copy()
         new_df.set_index("ID", inplace=True)
