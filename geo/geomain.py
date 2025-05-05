@@ -59,13 +59,19 @@ class MainGeoProcessor:
         docs = list(collection.find(query))
         return pd.DataFrame(docs) if docs else pd.DataFrame()
 
+    def sanitize_dataframe(self, df):
+        df = df.copy()
+        # Replace NaT in datetime columns
+        for col in df.columns:
+            if pd.api.types.is_datetime64_any_dtype(df[col]):
+                df[col] = df[col].apply(lambda x: x if pd.notnull(x) else None)
+        return df
+
     def update_enriched_rides(self):
         elife_df = self.fetch_dataframe_from_mongo(get_mongo_collection("elife_rides"), {})
         wt_df = self.fetch_dataframe_from_mongo(get_mongo_collection("wt_rides"), {})
 
         enriched_df = pd.concat([elife_df, wt_df], ignore_index=True)
-
-        # Drop rows with missing or invalid IDs
         enriched_df = enriched_df.dropna(subset=["ID"])
         enriched_df = enriched_df[enriched_df["ID"] != ""]
 
@@ -92,7 +98,8 @@ class MainGeoProcessor:
         new_df.set_index("ID", inplace=True)
 
         existing_df = self.fetch_dataframe_from_mongo(self.rides_collection, {})
-        existing_df.set_index("ID", inplace=True) if not existing_df.empty else None
+        if not existing_df.empty:
+            existing_df.set_index("ID", inplace=True)
 
         to_update = new_df.loc[new_df.index.intersection(existing_df.index)]
         to_add = new_df.loc[~new_df.index.isin(existing_df.index)]
@@ -104,10 +111,7 @@ class MainGeoProcessor:
             self.rides_collection.update_one({"ID": doc_id}, {"$set": row_dict})
 
         if not to_add.empty:
-            clean_df = to_add.reset_index().copy()
-            # Replace NaT with None in datetime columns
-            for col in clean_df.select_dtypes(include=["datetime64[ns]"]).columns:
-                clean_df[col] = clean_df[col].where(clean_df[col].notna(), None)
+            clean_df = self.sanitize_dataframe(to_add.reset_index())
             self.rides_collection.insert_many(clean_df.to_dict(orient="records"))
 
         for doc_id in to_remove.index:
