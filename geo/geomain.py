@@ -4,6 +4,7 @@ from utils.mongodb_utils import get_mongo_collection
 from datetime import datetime
 import time
 import pandas as pd
+import traceback
 
 import os
 
@@ -137,8 +138,17 @@ class MainGeoProcessor:
                 self.update_enriched_rides()
                 time.sleep(interval)
 
+
             except Exception as loop_error:
-                self.log_event("critical", "🔥 Enrichment loop crashed", {"error": str(loop_error)})
+
+                self.log_event("critical", "🔥 Enrichment loop crashed", {
+
+                    "error": str(loop_error),
+
+                    "trace": traceback.format_exc()
+
+                })
+
                 time.sleep(interval)
 
 if __name__ == "__main__":
