@@ -13,6 +13,15 @@ def is_allowed_region(pickup, dropoff, allowed_regions):
             return True
     return False
 
+def is_malformed(row):
+    return (
+        not row.get("Pickup") or
+        not row.get("Dropoff") or
+        pd.isna(row.get("ride_datetime")) or
+        row.get("ride_datetime") == "" or
+        row.get("ID", "").strip() == ""
+    )
+
 class MainGeoProcessor:
     def __init__(self):
         self.geo = MongoGeoCoder()
@@ -75,6 +84,12 @@ class MainGeoProcessor:
         enriched_df = enriched_df.dropna(subset=["ID"])
         enriched_df = enriched_df[enriched_df["ID"] != ""]
 
+        # Drop malformed rows entirely
+        before_clean = len(enriched_df)
+        enriched_df = enriched_df[~enriched_df.apply(is_malformed, axis=1)]
+        after_clean = len(enriched_df)
+        self.log_event("info", "🧹 Dropped malformed rows", {"dropped": before_clean - after_clean})
+
         client_name = os.getenv("CLIENT_ID")
         client_config = get_mongo_collection("clients").find_one({"client_name": client_name})
 
@@ -88,7 +103,7 @@ class MainGeoProcessor:
                 )
             ]
             after_count = len(enriched_df)
-            self.log_event("info", f"\U0001f6a7 Region filter applied: {before_count - after_count} rides excluded", {
+            self.log_event("info", f"🚧 Region filter applied: {before_count - after_count} rides excluded", {
                 "total_before": before_count,
                 "total_after": after_count,
                 "allowed_regions": allowed_regions
@@ -117,19 +132,19 @@ class MainGeoProcessor:
         for doc_id in to_remove.index:
             self.rides_collection.delete_one({"ID": doc_id})
 
-        self.log_event("info", "\U0001f501 Enriched rides collection synchronized", {
+        self.log_event("info", "🔁 Enriched rides collection synchronized", {
             "added": len(to_add),
             "updated": len(to_update),
             "removed": len(to_remove)
         })
 
     def run_enrichment_loop(self, interval=30):
-        self.log_event("info", "\U0001f30d Enrichment loop started", {"interval_seconds": interval})
+        self.log_event("info", "🌍 Enrichment loop started", {"interval_seconds": interval})
         while True:
             try:
                 for source in ["elife", "wt", "calendar"]:
                     records, collection = self.fetch_records_to_enrich(source)
-                    self.log_event("info", f"\U0001f50d Found {len(records)} to enrich for {source}")
+                    self.log_event("info", f"🔍 Found {len(records)} to enrich for {source}")
                     for rec in records:
                         try:
                             rec = self.geo.process_address_fields(rec, source=source)
