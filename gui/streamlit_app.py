@@ -6,6 +6,10 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 from datetime import datetime, timedelta
+from match_card_renderer import render_match_cards
+from calendar_view_renderer import  render_calendar_page
+
+
 
 # 🔧 Utility to convert image to base64
 import base64
@@ -65,8 +69,12 @@ st.markdown("""
 
 # 🕒 Date Filter UI
 st.sidebar.markdown("## 🔍 Date Filter")
-start_date = st.sidebar.date_input("Start Date", datetime(2025, 5, 13))
-end_date = st.sidebar.date_input("End Date", datetime(2025, 5, 13))
+today = datetime.today().date()
+start_date = st.sidebar.date_input("Start Date", value=today)
+end_date = st.sidebar.date_input("End Date", value=today + timedelta(days=7))
+
+if start_date > end_date:
+    st.sidebar.error("Start date must be before end date.")
 start_dt = datetime.combine(start_date, datetime.min.time())
 end_dt = datetime.combine(end_date, datetime.max.time())
 
@@ -149,26 +157,16 @@ with tab1:
     st.subheader("🚗 Match Data Overview")
     df = load_match_data()
     if not df.empty:
-        selected_cols = [
-            "Pickup", "Dropoff", "Ride_Time", "Ride_Arrival",
-            "Match_Source", "Matched_Pickup", "Matched_Dropoff",
-            "Match_Time", "Match_Arrival", "Match_Direction",
-            "Time_Difference_min", "Real_Distance_km", "Real_Duration_min",
-            "DoubleUtilized", "MatchStatus", "CalendarMatchPair"
-        ]
-        df_display = df[selected_cols]
-        st.dataframe(df_display, use_container_width=True, height=600)
+        view_mode = st.radio("Select view mode:", ["Cards", "Table"], horizontal=True)
+        render_match_cards(df, as_cards=(view_mode == "Cards"))
     else:
         st.warning("No Match Data Found.")
+
 
 # 🗓️ Calendar Tasks Tab
 with tab2:
     st.subheader("🗓️ Calendar Tasks")
-    df = load_calendar_tasks()
-    if not df.empty:
-        st.dataframe(df, use_container_width=True, height=600)
-    else:
-        st.warning("No Calendar Tasks Found.")
+    render_calendar_page(start_dt, end_dt)
 
 # 🚛 Rides Data Tab
 with tab3:

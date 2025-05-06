@@ -13,7 +13,7 @@ class MatchFinder:
         self.HOME_RADIUS_KM = 10
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
-        self.logged_invalid_rides = set()  # 🆕 invalid kayıtları sadece bir kez logla
+        self.logged_invalid_rides = set()
         self.logged_invalid_candidates = set()
 
     def is_near_home(self, coords):
@@ -129,6 +129,7 @@ class MatchFinder:
                     "Real Duration (min)": round(real_dur_min),
                     "Matched Pickup": candidate["Pickup"],
                     "Matched Dropoff": candidate["Dropoff"],
+                    "Matched_Price": candidate.get("Price", "₺N/A"),
                     "DoubleUtilized": self.is_double_utilized(
                         ride_arrival, candidate_departure,
                         ride_dropoff_coords, candidate_pickup
@@ -171,6 +172,7 @@ class MatchFinder:
                     "Real Duration (min)": round(real_dur_min),
                     "Matched Pickup": task["Pickup"],
                     "Matched Dropoff": task["Dropoff"],
+                    "Matched_Price": "₺N/A",
                     "DoubleUtilized": self.is_double_utilized(
                         ride_arrival, task_departure,
                         ride_dropoff_coords, task_pickup
@@ -183,6 +185,7 @@ class MatchFinder:
                 "Pickup": ride["Pickup"],
                 "Dropoff": ride["Dropoff"],
                 "Ride Arrival": ride_arrival,
+                "Price": ride.get("Price", "₺N/A"),
                 "Matches": matches
             })
 
@@ -194,7 +197,7 @@ class MatchFinder:
             return (
                 lat is not None and lon is not None and
                 isinstance(lat, (int, float)) and isinstance(lon, (int, float)) and
-                not (lat != lat or lon != lon)  # NaN kontrolü
+                not (lat != lat or lon != lon)
             )
         except Exception:
             return False
@@ -210,10 +213,12 @@ class MatchFinder:
                     "Ride_Arrival": result["Ride Arrival"],
                     "Pickup": result["Pickup"],
                     "Dropoff": result["Dropoff"],
+                    "Price": result.get("Price", "₺N/A"),
                     "Match_Source": match["Match Source"],
                     "Matched_ID": match["Matched ID"],
                     "Match_Time": match["Match Time"],
                     "Match_Arrival": match["Match Arrival"],
+                    "Matched_Price": match.get("Matched_Price", "₺N/A"),
                     "Match_Direction": match["Match Direction"],
                     "Time_Difference_min": match["Time Difference (min)"],
                     "Geo_Distance_km": match["Geo Distance (km)"],
