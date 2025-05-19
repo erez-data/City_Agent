@@ -92,7 +92,7 @@ def show_active_chrome_processes(context=""):
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
 
-def run_scraper_loop(interval=60):
+def run_scraper_loop(interval=30):
     global scraper_cycle_counter
     login_attempts = 0
 
@@ -145,7 +145,7 @@ def run_scraper_loop(interval=60):
                 break
             else:
                 print("🔁 30 sn sonra yeni login deneniyor...")
-                time.sleep(30)
+                time.sleep(10)
 
 if __name__ == "__main__":
     run_scraper_loop()
