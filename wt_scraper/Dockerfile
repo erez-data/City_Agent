@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "-u", "wt_main.py"]
+CMD ["python", "-u", "wt_main_fast.py"]
