@@ -1,6 +1,3 @@
 __pycache__/
 *.pyc
-.env.client_city
-.env.*
 screenshots/
-.env.client_usetravel
