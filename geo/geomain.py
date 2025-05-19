@@ -171,4 +171,4 @@ class MainGeoProcessor:
 
 if __name__ == "__main__":
     processor = MainGeoProcessor()
-    processor.run_enrichment_loop(interval=30)
+    processor.run_enrichment_loop(interval=15)
