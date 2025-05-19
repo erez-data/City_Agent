@@ -143,7 +143,7 @@ def build_match_runner():
         update_processed_flags(ride_ids, task_ids)
 
         print("🔁 Match cycle complete. Sleeping 30s...\n")
-        time.sleep(30)
+        time.sleep(10)
 
 
 if __name__ == '__main__':

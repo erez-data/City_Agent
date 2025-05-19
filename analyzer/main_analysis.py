@@ -158,7 +158,7 @@ def run_analysis_cycle():
         traceback.print_exc()
     finally:
         print("\n🔄 Cycle completed. Sleeping for 30 seconds...")
-        time.sleep(30)
+        time.sleep(10)
 
 
 if __name__ == "__main__":
