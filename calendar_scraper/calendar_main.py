@@ -29,7 +29,7 @@ def log_status_summary(label):
     for key in ["NEW", "UPDATED", "ACTIVE", "REMOVED"]:
         print(f"  - {key}: {summary.get(key, 0)}")
 
-def run_calendar_loop(interval=60):
+def run_calendar_loop(interval=30):
     print("\n=== Calendar Scraper Başlatıldı ===")
     scraper = CalendarScraper()
 
@@ -61,7 +61,7 @@ def run_calendar_loop(interval=60):
         except Exception as e:
             print(f"[ERROR] Scraper hata verdi: {e}")
             traceback.print_exc()
-            time.sleep(30)
+            time.sleep(10)
 
 if __name__ == "__main__":
     run_calendar_loop()
