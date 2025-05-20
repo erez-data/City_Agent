@@ -83,7 +83,7 @@ def log_mongo_status(label):
         print(f"  - {key}: {summary.get(key, 0)}")
 
 def show_active_chrome_processes(context=""):
-    print(f"\n🛠️ Active Chrome Processes {context}:")
+    #print(f"\n🛠️ Active Chrome Processes {context}:")
     for proc in psutil.process_iter(['pid', 'name', 'memory_info']):
         try:
             if proc.info['name'] and ('chrome' in proc.info['name'].lower() or 'chromedriver' in proc.info['name'].lower()):

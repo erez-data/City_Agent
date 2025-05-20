@@ -30,8 +30,7 @@ class ElifeScraper:
 
             for i in range(max_scrolls):
                 self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", scroll_div)
-                print(f"  ↳ Scroll {i+1}/{max_scrolls}")
-                time.sleep(0.3)
+                time.sleep(0.1)
                 try:
                     no_more_element = self.driver.find_element(By.XPATH, "//div[text()='No more']")
                     if no_more_element.is_displayed():
