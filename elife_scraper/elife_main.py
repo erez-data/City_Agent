@@ -88,7 +88,7 @@ def show_active_chrome_processes(context=""):
         try:
             if proc.info['name'] and ('chrome' in proc.info['name'].lower() or 'chromedriver' in proc.info['name'].lower()):
                 mem_mb = (proc.info['memory_info'].rss / 1024 / 1024) if proc.info['memory_info'] else 0
-                print(f"  PID {proc.pid} - {proc.info['name']} - {mem_mb:.1f} MB")
+                #print(f"  PID {proc.pid} - {proc.info['name']} - {mem_mb:.1f} MB")
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
 
