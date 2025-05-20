@@ -29,6 +29,11 @@ class ElifeAutoLoginFast:
             options.add_argument("--headless=new")
             options.add_argument("--window-size=1920,1080")
 
+        # 👇 Add these outside the headless block so they apply always
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+
         chrome_path = get_chrome_binary_path()
         driver_path = get_chromedriver_path()
         if chrome_path:

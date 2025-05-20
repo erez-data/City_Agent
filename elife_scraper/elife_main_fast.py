@@ -68,7 +68,7 @@ def run_loop():
     while True:
         try:
             if session.should_relogin():
-                print("♻️ 15 dakika doldu, tekrar login olunuyor...")
+                print("♻️ 15 dakika doldu, tekrar login olunuyor...version fast 1.0")
                 session.login()
 
             if (datetime.now() - last_scrape).total_seconds() >= 20:
