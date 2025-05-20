@@ -1,11 +1,11 @@
-# login.py - Integrated with full working logic using undetected-chromedriver and popup handling
-
+# login.py
 import os
 import time
 from dotenv import load_dotenv
-import undetected_chromedriver as uc
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from utils.browser_helper import get_chrome_binary_path, get_chromedriver_path
@@ -17,22 +17,18 @@ class ElifeAutoLogin:
         self.password = os.getenv("ELIFE_PASSWORD")
 
         if not self.username or not self.password:
-            raise ValueError("❌ ELIFE_USERNAME veya ELIFE_PASSWORD .env.client_usetravel.client_city dosyasında tanımlı değil!")
+            raise ValueError("❌ ELIFE_USERNAME or ELIFE_PASSWORD missing in .env")
 
-        options = uc.ChromeOptions()
+        options = webdriver.ChromeOptions()
         options.add_argument("--lang=tr-TR")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-infobars")
+        options.add_argument("--disable-extensions")
+        options.add_argument("--start-maximized")
+
         if headless:
             options.add_argument("--headless=new")
-            options.add_argument("--disable-gpu")
-            options.add_argument("--no-sandbox")
-            options.add_argument("--disable-dev-shm-usage")
-        else:
-            options.add_argument("--start-maximized")
-            options.add_argument("--disable-notifications")
-
-        options.add_argument("--disable-blink-features=AutomationControlled")
-        options.add_argument("--disable-extensions")
-        options.add_argument("--disable-infobars")
+            options.add_argument("--window-size=1920,1080")
 
         chrome_path = get_chrome_binary_path()
         driver_path = get_chromedriver_path()
@@ -40,40 +36,59 @@ class ElifeAutoLogin:
         if chrome_path:
             options.binary_location = chrome_path
 
-        self.driver = uc.Chrome(
-            options=options,
-            driver_executable_path=driver_path
-        )
+        self.driver = webdriver.Chrome(service=Service(driver_path), options=options)
 
     def login(self):
         try:
             self.driver.get("https://elifelimo.com/fleet/")
-            print("🌐 Siteye erişildi, input alanları bekleniyor...")
+            print("🌐 Opening site...")
 
+            # Wait for email input and enter credentials
             email = WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'input[ref="emailInput"]'))
             )
             email.send_keys(self.username)
-            print("📩 Kullanıcı adı girildi")
 
             password = self.driver.find_element(By.CSS_SELECTOR, 'input[ref="passwordInput"]')
             password.send_keys(self.password)
-            print("🔑 Şifre girildi")
 
-            self.driver.find_element(By.CSS_SELECTOR, 'input[ref="agrPolCheckbox"]').click()
             self.driver.find_element(By.CSS_SELECTOR, 'div[ref="submitBtn"]').click()
+            print("🔐 Submitted login form")
 
-            WebDriverWait(self.driver, 15).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'div.--p-4.--bg-white'))
-            )
-            time.sleep(3)
+            # Wait for potential agreement screen
+            time.sleep(11)
+
+            # ✅ Wait and force click the agreement button
+            try:
+                # Find all buttons with the orange gradient class
+                buttons = self.driver.find_elements(
+                    By.CSS_SELECTOR,
+                    "div.--bg-gradient-to-tr.--from-\\[\\#FF993C\\].--to-\\[\\#FE7A1F\\]"
+                )
+
+                if buttons:
+                    # Use the last one (in the sticky bottom bar)
+                    agreement_button = buttons[-1]
+
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", agreement_button)
+                    time.sleep(0.5)
+
+                    agreement_button.click()
+                    print("✅ Agreement button clicked via CSS selector (last match)")
+                    time.sleep(2)
+                else:
+                    print("⚠️ No agreement button found via CSS selector.")
+            except Exception as e:
+                print(f"❌ Failed to click agreement button: {e}")
+
+            time.sleep(2)
             self.close_all_popups()
             self.final_popup_check()
-            print("✅ Giriş başarılı")
+            print("✅ Login successful")
             return True
 
         except Exception as e:
-            print(f"❌ Giriş hatası: {e}")
+            print(f"❌ Login failed: {e}")
             return False
 
     def close_all_popups(self):
@@ -82,7 +97,6 @@ class ElifeAutoLogin:
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'section.--min-h-\\[4rem\\] i.i-close'))
             )
             close_btn.click()
-            print("🛑 Yeni özellik pop-up kapatıldı")
             time.sleep(1)
         except:
             pass
@@ -92,17 +106,15 @@ class ElifeAutoLogin:
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'section.modal-wrap i.i-close'))
             )
             close_btn.click()
-            print("🛑 Ana ekrana ekle pop-up kapatıldı")
             time.sleep(1)
         except:
             pass
 
         try:
-            notification_close = WebDriverWait(self.driver, 3).until(
+            notif = WebDriverWait(self.driver, 3).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.notification, div.alert, div.toast i.i-close, button.close'))
             )
-            notification_close.click()
-            print("🛑 Bildirim pop-up kapatıldı")
+            notif.click()
             time.sleep(1)
         except:
             pass

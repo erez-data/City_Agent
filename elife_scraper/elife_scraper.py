@@ -13,11 +13,26 @@ class ElifeScraper:
 
     def refresh_rides(self):
         try:
+            print("🟠 Attempting to click refresh...")
             refresh_btn = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'i.i-reload')))
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'i.i-reload'))
+            )
             refresh_btn.click()
-            time.sleep(2)
-            print("🔄 Rides refreshed successfully")
+            print("✅ Refresh button clicked")
+
+            time.sleep(2)  # wait to see what happens after refresh
+
+            # After refresh, check page status
+            page_url = self.driver.current_url
+            page_html = self.driver.page_source
+
+            if "login" in page_url.lower():
+                print("🚨 Redirected to login page after refresh!")
+            elif "session" in page_html.lower():
+                print("🚨 Session-related error text found in page source after refresh!")
+            else:
+                print("🟢 Refresh seemed successful, no redirect or error detected.")
+
         except Exception as e:
             print(f"⚠️ Error refreshing rides: {str(e)}")
 
@@ -30,7 +45,7 @@ class ElifeScraper:
 
             for i in range(max_scrolls):
                 self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", scroll_div)
-                time.sleep(0.1)
+                time.sleep(0.3)
                 try:
                     no_more_element = self.driver.find_element(By.XPATH, "//div[text()='No more']")
                     if no_more_element.is_displayed():
