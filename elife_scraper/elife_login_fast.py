@@ -67,10 +67,10 @@ class ElifeAutoLoginFast:
                 time.sleep(1)
                 agreement_button.click()
                 print("✅ Agreement button clicked")
-                time.sleep(5)
+                time.sleep(6)
 
             self.close_all_popups()
-            time.sleep(3)
+            time.sleep(4)
             self.final_popup_check()
             print("✅ Login successful")
             return True
@@ -91,7 +91,7 @@ class ElifeAutoLoginFast:
                     EC.element_to_be_clickable((By.CSS_SELECTOR, sel))
                 )
                 close_btn.click()
-                time.sleep(1)
+                time.sleep(2)
             except:
                 continue
 
