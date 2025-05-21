@@ -6,6 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from utils.time_utils import standardize_ride_time
 from utils.mongodb_utils import get_mongo_collection
+from selenium.webdriver.common.keys import Keys
+import os
 
 class ElifeScraperFast:
     def __init__(self, driver):
@@ -17,9 +19,48 @@ class ElifeScraperFast:
             refresh_btn = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'i.i-reload'))
             )
-            refresh_btn.click()
-            print("🔄 Rides refreshed")
+
+            try:
+                refresh_btn.click()
+            except Exception as e:
+                print(f"⚠️ Click error: {str(e)}")
+
+                # 📸 Screenshot on error
+                os.makedirs("/app/screenshots", exist_ok=True)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                self.driver.save_screenshot(f"/app/screenshots/refresh_error_{timestamp}.png")
+                print(f"📸 Screenshot saved: refresh_error_{timestamp}.png")
+
+                # ⛏️ Try to dismiss popups
+                try:
+                    self.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ESCAPE)
+                    time.sleep(1)
+                    popup_close_btns = self.driver.find_elements(By.CSS_SELECTOR, 'i.i-close')
+                    for btn in popup_close_btns:
+                        try:
+                            btn.click()
+                            print("❎ Popup closed")
+                            time.sleep(0.5)
+                        except:
+                            continue
+                except:
+                    pass
+
+                # 🔁 Retry click
+                try:
+                    refresh_btn = WebDriverWait(self.driver, 5).until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, 'i.i-reload'))
+                    )
+                    refresh_btn.click()
+                    print("🔄 Retry: Rides refreshed")
+                except:
+                    print("❌ Retry failed: refresh button still blocked")
+
+            else:
+                print("🔄 Rides refreshed")
+
             time.sleep(2)
+
         except Exception as e:
             print(f"⚠️ Error refreshing rides: {str(e)}")
 
