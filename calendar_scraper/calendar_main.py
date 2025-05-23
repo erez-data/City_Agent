@@ -29,7 +29,7 @@ def log_status_summary(label):
     for key in ["NEW", "UPDATED", "ACTIVE", "REMOVED"]:
         print(f"  - {key}: {summary.get(key, 0)}")
 
-def run_calendar_loop(interval=30):
+def run_calendar_loop(interval=60):
     print("\n=== Calendar Scraper Başlatıldı ===")
     scraper = CalendarScraper()
 
